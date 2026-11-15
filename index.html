@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointb Tréning Központ | Interaktív Tesztelő Portál (ITP)</title>
+    <!-- jsPDF könyvtár a PDF generáláshoz -->
+    <!-- Helyi offline mód: Külső CDN eltávolítva, natív böngészős PDF mentés (window.print) -->
+    <style>
+        :root {
+            --omv-blue: #002D62; 
+            --omv-light-blue: #004080;
+            --omv-green: #008751; 
+            --omv-green-light: #00a85d;
+            --gradient-bg: linear-gradient(135deg, #002D62 0%, #004080 50%, #00663d 100%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --border-color: #94a3b8;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        body, .fo-kontener, .tarolo, .kerdes-doboz, .kerdes-doboz p, .valasz-opcio, #uzenetContainer, #visszaszamlaloSáv, .cim-kontener, .pointb-kulon-doboz, .oldal-lablice {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            outline: none;
+        }
+
+        input[type="text"], input[type="tel"], select {
+            user-select: text;
+            -webkit-user-select: text;
+            -webkit-touch-callout: default;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .fo-kontener {
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 0.5s ease-out;
+            flex: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pointb-kulon-doboz {
+            background: #ffffff;
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            border-left: 6px solid var(--omv-green);
+            display: flex;
+            align-items: center;
+        }
+
+        .pointb-cimke {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--omv-green);
+            display: block;
+        }
+
+        /* Visszaszámláló sáv a teszt indítása alatt */
+        #visszaszamlaloSáv {
+            background: #991b1b;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
+            border: 1px solid #f87171;
+        }
+
+        .cim-kontener {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-weight: 800;
+            margin: 0 0 6px 0;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .verzio-info {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .tarolo {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-left: 4px solid var(--omv-green);
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--omv-blue);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="file"], input[type="text"], input[type="tel"], select {
+            width: 100%;
+            padding: 10px 14px;
+            background: #f0fdf4;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, input[type="tel"]:focus, select:focus {
+            border-color: var(--omv-green);
+            box-shadow: 0 0 0 3px rgba(0, 135, 81, 0.2);
+        }
+
+        .radio-csoport {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+            background: #f0fdf4;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .radio-opcio {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--omv-blue);
+        }
+
+        .radio-opcio input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--omv-green);
+            transform: scale(1.2);
+        }
+
+        .input-csoport {
+            margin-bottom: 16px;
+        }
+
+        .input-csoport:last-child {
+            margin-bottom: 0;
+        }
+
+        input[type="file"] {
+            border: 2px dashed var(--omv-green);
+            cursor: pointer;
+            color: var(--text-muted);
+            background: #f8fafc;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--omv-green);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: background 0.2s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--omv-green-light);
+        }
+
+        .FoGomb {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--omv-green) 0%, #00663d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 135, 81, 0.4);
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .FoGomb:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .FoGomb:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 135, 81, 0.6);
+        }
+
+        .drive-gomb {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .drive-gomb:hover:not(:disabled) {
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.6);
+        }
+
+        .kerdes-doboz {
+            background: #ffffff;
+            border-left: 5px solid var(--omv-green);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        .kerdes-doboz p {
+            margin-top: 0;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 17px;
+        }
+
+        .valasz-opcio {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin: 12px 0;
+            padding: 6px 0;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0;
+            box-shadow: none !important;
+            outline: none !important;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .valasz-opcio:hover, .valasz-opcio:active, .valasz-opcio:focus, .valasz-opcio:focus-within {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        .valasz-opcio input {
+            margin-right: 12px;
+            accent-color: var(--omv-green);
+            transform: scale(1.3);
+            cursor: pointer;
+            outline: none !important;
+            box-shadow: none !important;
+            flex-shrink: 0;
+        }
+
+        .szoveges-input-kontener {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0fdf4;
+            padding: 12px;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .szoveges-input {
+            padding: 8px 12px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            width: 100%;
+            max-width: 500px;
+            transition: border-color 0.2s;
+        }
+
+        .szoveges-input:focus {
+            border-color: var(--omv-green);
+            box-shadow: 0 0 0 3px rgba(0, 135, 81, 0.2);
+        }
+
+        #uzenetContainer {
+            margin-top: 20px;
+            padding: 14px 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            display: none;
+        }
+
+        #uzenetContainer:not(:empty) {
+            display: block;
+        }
+
+        .hiba {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #f87171;
+        }
+
+        .siker {
+            color: #065f46;
+            background: #d1fae5;
+            border: 1px solid #34d399;
+        }
+
+        .info {
+            color: #065f46;
+            background: #e6f4ed;
+            border: 1px solid #008751;
+        }
+
+        .figyelmeztetes {
+            color: #9a3412;
+            background: #ffedd5;
+            border: 1px solid #fdba74;
+        }
+
+        .statisztika-doboz {
+            background: #ffffff;
+            padding: 24px;
+            margin-top: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .statisztika-lista {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .statisztika-elem {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .statisztika-elem.helyes-kartya {
+            border-left: 6px solid var(--omv-green);
+        }
+
+        .statisztika-elem.hibas-kartya {
+            border-left: 6px solid #dc2626;
+        }
+
+        .statisztika-fejlec {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .opcio-reszlet {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .opcio-jo-helyes {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            font-weight: 600;
+        }
+
+        .opcio-rossz-bejelolt {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            font-weight: 600;
+        }
+
+        .opcio-jo-kihagyott {
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fde047;
+            font-weight: 600;
+        }
+
+        .opcio-semleges {
+            background: #ffffff;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .oldal-lablice {
+            margin-top: 30px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        /* Teljes képernyős köszönő záróoldal a teszt végén */
+        #koszonoZaroKepernyo {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: #ffffff;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .koszono-tartalom {
+            max-width: 720px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(0, 135, 81, 0.75) 0%, rgba(0, 102, 61, 0.85) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .koszono-cim {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 18px 0;
+            line-height: 1.35;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .koszono-alairas {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 28px 0;
+            line-height: 1.4;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .koszono-statusz {
+            font-size: 14px;
+            color: #ffffff;
+            margin-top: 10px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            background: rgba(0, 120, 215, 0.55);
+            border: 1px solid rgba(135, 206, 250, 0.5);
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .koszono-eredmeny-gomb {
+            margin-top: 26px;
+            background: rgba(0, 120, 215, 0.65);
+            color: #ffffff;
+            border: 1px solid rgba(135, 206, 250, 0.6);
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .koszono-eredmeny-gomb:hover {
+            background: rgba(0, 140, 245, 0.85);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+    
+        @media print {
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .fo-kontener { max-width: 100% !important; }
+            .tarolo, .statisztika-doboz, .kerdes-doboz { border: 1px solid #ccc !important; box-shadow: none !important; background: white !important; }
+            .FoGomb, #koszonoZaroKepernyo, .oldal-lablice, .pointb-kulon-doboz { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fo-kontener">
+        <div class="pointb-kulon-doboz">
+            <span class="pointb-cimke">Pointb Tréning Központ</span>
+        </div>
+
+        <div class="cim-kontener">
+            <h2>Interaktív Tesztelő Portál (ITP)</h2>
+            <div class="verzio-info">v1.92 updated: 2026.11.15</div>
+        </div>
+
+        <div class="tarolo" id="beallitasokKontener">
+            <div class="input-csoport">
+                <label for="trenerNev">A tréner neve:</label>
+                <select id="trenerNev">
+                    <option value="">-- Válassz trénert --</option>
+                    <option value="Gyöngyösi György">Gyöngyösi György</option>
+                    <option value="Menyhárt Zoltán">Menyhárt Zoltán</option>
+                    <option value="Molnár Balázs">Molnár Balázs</option>
+                    <option value="Paulovics Tímea">Paulovics Tímea</option>
+                    <option value="Szirtes Tamás">Szirtes Tamás</option>
+                </select>
+            </div>
+            <div class="input-csoport" style="margin-top: 16px;">
+                <label for="vizsgazoNev">Vizsgázó választott neve:</label>
+                <input type="text" id="vizsgazoNev" placeholder="">
+            </div>
+            <div class="input-csoport" style="margin-top: 16px;">
+                <label for="kutSzam">Üzemanyagtöltő állomás száma (Kútszám):</label>
+                <input type="text" id="kutSzam" maxlength="4" placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+
+
+            <div class="input-csoport" style="margin-top: 20px;">
+                <label>Kérdéssor kiválasztása:</label>
+                <div class="radio-csoport">
+                    <label class="radio-opcio">
+                        <input type="radio" name="kerdessorValaszto" value="negyedeves" checked onchange="valasztoValtas()">
+                        Aktuális negyedéves kérdéssor
+                    </label>
+                    <label class="radio-opcio">
+                        <input type="radio" name="kerdessorValaszto" value="sajat" onchange="valasztoValtas()">
+                        Saját TXT fájl feltöltése
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-csoport" id="fajlBeolvasoCsoport" style="display: none; margin-top: 16px;">
+                <label for="fajlBeolvaso">Válaszd ki a kérdéseket tartalmazó TXT fájlt:</label>
+                <input type="file" id="fajlBeolvaso" accept=".txt">
+            </div>
+        </div>
+
+        <div class="tarolo" id="inditoKontener">
+            <button type="button" id="inditoGomb" class="FoGomb">🚀 Teszt indítása</button>
+            <div id="jsStatuszJelzo" style="margin-top: 10px; font-size: 12px; text-align: center; color: #991b1b; font-weight: 600;">
+                ⚠️ Ha ezt a piros figyelmeztetést látod, a böngésző előnézeti módban tiltja a programkódot! Nyisd meg a fájlt rendes weboldalként (http/https)!
+            </div>
+        </div>
+
+        <div id="uzenetContainer"></div>
+
+        <!-- Visszaszámláló sáv a teszt indítása alatt / kérdések felett -->
+        <div id="visszaszamlaloSáv">⏱️ Hátralévő idő: <span id="visszaszamlaloTimer">15:00</span></div>
+
+        <div id="kerdesekKontener"></div>
+    </div>
+
+    <div class="oldal-lablice">
+        core code by prinyo
+    </div>
+
+    <!-- Üres záró lap a teszt befejezése után -->
+    <div id="koszonoZaroKepernyo" style="text-align: center; justify-content: center; align-items: center;">
+        <div class="koszono-tartalom" style="text-align: center; margin: 0 auto;">
+            <div class="koszono-cim" style="margin-bottom: 0; text-align: center;">
+                Köszönjük, hogy használta a Pointb Tréning Központ<br>
+                Interaktív Tesztelő Portálját (ITP),<br>
+                és kitöltötte a tesztünket!
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        document.addEventListener("selectionchange", function() {
+            const active = document.activeElement;
+            if (!active || (active.tagName !== "INPUT" && active.tagName !== "TEXTAREA")) {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && sel.toString().length > 0) {
+                    sel.removeAllRanges();
+                }
+            }
+        });
+
+        
+        // Biztonságos Web Audio API hangjelzés iOS Safari / Chrome-hoz
+        function lejatszoKattintasHang() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch (e) {}
+        }
+
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAio-MBTgPGNtT53yeTxq67XJAc_w4fQJrG-WuikFM4aPRJSo2DU_nYm1RxSZwKDXW/exec";
+
+        const negyedevesKerdesSzuvereniTxt = `### Kérdés 1
+Fogalmazz meg egy ajánlást a Costa Rica kávéra!
+- Helyes válasz: 100%Arabica csokoládés-citrusos kávét ajánlok
+- Pontszám: 1
+
+### Kérdés 2
+Milyen ízjegyekkel rendelkezik a Costa Rica kávénk? (több jó válasz)
+- Választási lehetőségek:
+  * A) Csokoládés ízjegyek, krémes, karakteres
+  * B) Citrusos
+  * C) Mézes
+- Helyes válasz: A B
+- Pontszám: 1
+
+### Kérdés 3
+Kinek ajánljuk az új Costa Rica kávét?
+- Választási lehetőségek:
+  * A) Minden betérő vásárlónak
+  * B) Tankoló vevőknek
+  * C) Akik kérnek egy presszót
+- Helyes válasz: A
+- Pontszám: 1
+
+### Kérdés 4
+Hogy ajánlod a Marketing akciót az applikációval rendelkezőknek?
+- Választási lehetőségek:
+  * A) Érdemes gyűjteni a matricákat, mert spórolhat
+  * B) Nem ajánlom, mert az akció részvételi szabályzata az OMV honlapon is olvasható
+  * C) Matricagyűjtés nélkül azonnal meg tudja vásárolni kedvezményesen a termékeket.
+- Helyes válasz: C
+- Pontszám: 1
+
+### Kérdés 5
+Tűz esetén mi a helyes intézkedési sorrend?
+- Választási lehetőségek:
+  * A) Vészkapcsoló használata, tűz oltása, tűzoltóság értesítése
+  * B) Vészkapcsoló használata, tűzoltóság értesítése, tűz oltása
+  * C) Tűz oltása, vészkapcsoló használata, tűzoltóság értesítése
+- Helyes válasz: B
+- Pontszám: 1
+
+### Kérdés 6
+Személyi sérüléssel járó baleset esetén kit értesítünk? (idős ember elesett)
+- Választási lehetőségek:
+  * A) Mentőket, állomásvezetőt
+  * B) Mentőket, állomásvezetőt, területi vezetőt
+  * C) Állomásvezetőt elég
+- Helyes válasz: B
+- Pontszám: 1
+
+### Kérdés 7
+Milyen mértékben nyújtunk segítséget baleset esetén?
+- Választási lehetőségek:
+  * A) Elég ha a helyszint biztosítjuk
+  * B) Bátorságunktól függ
+  * C) Amilyen mértékben ki vagyunk képezve
+- Helyes válasz: C
+- Pontszám: 1
+
+### Kérdés 8
+Miért ajánljuk télen a MaxxMotion Diesel üzemanyagunkat? (több jó válasz)
+- Választási lehetőségek:
+  * A) Ausztriából érkezik.
+  * B) Nagy hidegben is biztonságosan eléri az uticélját
+  * C) A dermedéspontja -40 fok.
+- Helyes válasz: B C
+- Pontszám: 1
+
+### Kérdés 9
+Mit jelent a cetánszám?
+- Választási lehetőségek:
+  * A) Gázolaj oktánszámát
+  * B) Gázolaj lobbanáspontját, öngyulladási hajlamát
+  * C) Benzin kompressziótűrési viszonyszámát
+- Helyes válasz: B
+- Pontszám: 1
+
+### Kérdés 10
+Mennyi a MaxxMotion diesel cetánszáma?
+- Választási lehetőségek:
+  * A) Legalább 100
+  * B) Legalább 95
+  * C) Legalább 55
+- Helyes válasz: C
+- Pontszám: 1`;
+
+        let kerdesLista = [];
+        let aktivKerdesLista = [];
+        let aktualisKerdesIndex = 0;
+        let rögzítettFelhasznaloiValaszok = [];
+        let utolsoEredmenyAdatok = null;
+        let visszaszamlaloInterval = null;
+        let attekintesVisszaszamlaloInterval = null;
+        let tesztKezdesIdo = null;
+        let idotullepesTortenet = false;
+
+        function szovegNormalizalasa(str) {
+            if (!str) return "";
+            return str
+                .toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]/g, "");
+        }
+
+        function valasztoValtas() {
+            const valasztas = document.querySelector('input[name="kerdessorValaszto"]:checked').value;
+            const fajlCsoport = document.getElementById("fajlBeolvasoCsoport");
+            const gomb = document.getElementById("inditoGomb");
+            const uzenetDiv = document.getElementById("uzenetContainer");
+
+            if (valasztas === "negyedeves") {
+                fajlCsoport.style.display = "none";
+                kerdesLista = rugalmasTxtFeldolgozo(negyedevesKerdesSzuvereniTxt);
+                gomb.disabled = false;
+                uzenetDiv.textContent = `✅ Az Aktuális negyedéves kérdéssor készen áll (${kerdesLista.length} db kérdés). Kattints a Teszt indítására!`;
+                uzenetDiv.className = "siker";
+            } else {
+                fajlCsoport.style.display = "block";
+                const fajlInput = document.getElementById("fajlBeolvaso");
+                if (fajlInput.files.length === 0) {
+                    gomb.disabled = true;
+                    uzenetDiv.textContent = "ℹ️ Kérlek, tallózd be a saját TXT fájlodat a teszt indításához!";
+                    uzenetDiv.className = "info";
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const fajlInput = document.getElementById("fajlBeolvaso");
+            const inditoGomb = document.getElementById("inditoGomb");
+            const uzenetDiv = document.getElementById("uzenetContainer");
+            valasztoValtas();
+
+            fajlInput.addEventListener("change", function(event) {
+                const valasztas = document.querySelector('input[name="kerdessorValaszto"]:checked').value;
+                if (valasztas !== "sajat") return;
+
+                const fajl = event.target.files[0];
+                if (!fajl) return;
+
+                uzenetDiv.textContent = "Fájl beolvasása folyamatban...";
+                uzenetDiv.className = "info";
+                inditoGomb.disabled = true;
+
+                const olvaso = new FileReader();
+
+                olvaso.onload = function(e) {
+                    try {
+                        const tartalom = e.target.result;
+                        kerdesLista = rugalmasTxtFeldolgozo(tartalom);
+
+                        if (kerdesLista.length === 0) {
+                            throw new Error("Nem sikerült egyetlen kérdést sem kinyerni. Ellenőrizd a fájl formátumát!");
+                        }
+
+                        inditoGomb.disabled = false;
+                        uzenetDiv.textContent = `✅ A(z) "${fajl.name}" fájl sikeresen betöltve (${kerdesLista.length} db kérdés). Kattints a Teszt indítására!`;
+                        uzenetDiv.className = "siker";
+
+                    } catch (elemzésiHiba) {
+                        uzenetDiv.textContent = "⚠️ Feldolgozási hiba: " + elemzésiHiba.message;
+                        uzenetDiv.className = "hiba";
+                        inditoGomb.disabled = true;
+                    }
+                };
+
+                olvaso.readAsText(fajl, "UTF-8");
+            });
+
+            // Jelezzük vizuálisan, hogy a JavaScript motor sikeresen fut az eszközön
+            const jsJelzo = document.getElementById("jsStatuszJelzo");
+            if (jsJelzo) {
+                jsJelzo.textContent = "🟢 Rendszer aktív • Mobil érintésvezérlés kész";
+                jsJelzo.style.color = "#065f46";
+            }
+
+            let utolsoInditasIdo = 0;
+
+            // iOS / iPadOS Safari & Chrome ugrásmentes, azonnali indításkezelő
+            function tesztInditasKezeles(e) {
+                const most = Date.now();
+                if (most - utolsoInditasIdo < 500) return;
+                utolsoInditasIdo = most;
+
+                if (e && e.cancelable) {
+                    e.preventDefault();
+                }
+                lejatszoKattintasHang();
+
+                try {
+                    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                        document.activeElement.blur();
+                    }
+
+                    const trenerInput = document.getElementById("trenerNev").value.trim();
+                    const nevInput = document.getElementById("vizsgazoNev").value.trim();
+                    const kutInput = document.getElementById("kutSzam").value.trim();
+
+                    let hianyzoAdatok = [];
+                    if (!trenerInput) hianyzoAdatok.push("A tréner neve");
+                    if (!nevInput) hianyzoAdatok.push("A vizsgázó neve");
+                    if (!kutInput) hianyzoAdatok.push("A kútszám");
+
+                    if (hianyzoAdatok.length > 0) {
+                        const hibaSzoveg = `⚠️ HIÁNYZÓ ADATOK: ${hianyzoAdatok.join(", ")}! A teszt elindításához kérjük, töltsön ki minden mezőt.`;
+                        uzenetDiv.textContent = hibaSzoveg;
+                        uzenetDiv.className = "hiba";
+                        uzenetDiv.style.display = "block";
+                        uzenetDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return;
+                    }
+
+                    if (kutInput === "0000") {
+                        const hibaSzoveg = "⚠️ A kútszám nem lehet 0000, kérem változtassa meg !";
+                        uzenetDiv.textContent = hibaSzoveg;
+                        uzenetDiv.className = "hiba";
+                        uzenetDiv.style.display = "block";
+                        uzenetDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return;
+                    }
+
+                    if (kerdesLista.length === 0) throw new Error("Nincsenek betöltött kérdések.");
+
+                    document.getElementById("beallitasokKontener").style.display = "none";
+                    document.getElementById("inditoKontener").style.display = "none";
+
+                    tesztKezdesIdo = new Date();
+                    idotullepesTortenet = false;
+                    aktualisKerdesIndex = 0;
+                    rögzítettFelhasznaloiValaszok = [];
+                    aktivKerdesLista = [...kerdesLista];
+
+                    uzenetDiv.textContent = `🎯 A teszt elindult (Tréner: ${trenerInput}, Vizsgázó: ${nevInput}, Kútszám: ${kutInput}). Kérdés 1 / ${aktivKerdesLista.length}`;
+                    uzenetDiv.className = "info";
+                    uzenetDiv.style.display = "block";
+
+                    kovetkezoKerdesMegjelenitese();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    const kerdesekKontenerElem = document.getElementById("kerdesekKontener");
+                    if (aktivKerdesLista && aktivKerdesLista.length > 0 && kerdesekKontenerElem && kerdesekKontenerElem.children.length > 0) {
+                        inditVisszaszamlalot(15 * 60);
+                    }
+
+                } catch (hiba) {
+                    uzenetDiv.textContent = "❌ Hiba a teszt indításakor: " + hiba.message;
+                    uzenetDiv.className = "hiba";
+                    uzenetDiv.style.display = "block";
+                }
+            }
+
+            // Közvetlen érintés (touchend) és kattintás (click) támogatás ugrás nélkül
+            inditoGomb.addEventListener("touchend", tesztInditasKezeles, { passive: false });
+            inditoGomb.addEventListener("click", tesztInditasKezeles);
+        });
+
+        // 15 perces visszaszámláló logika
+        function inditVisszaszamlalot(mp) {
+            const sáv = document.getElementById("visszaszamlaloSáv");
+            const timerSpan = document.getElementById("visszaszamlaloTimer");
+            sáv.style.display = "block";
+
+            let hatralevoIdo = mp;
+
+            if (visszaszamlaloInterval) clearInterval(visszaszamlaloInterval);
+
+            visszaszamlaloInterval = setInterval(() => {
+                let perc = Math.floor(hatralevoIdo / 60);
+                let masodperc = hatralevoIdo % 60;
+
+                timerSpan.textContent = `${String(perc).padStart(2, '0')}:${String(masodperc).padStart(2, '0')}`;
+
+                if (hatralevoIdo <= 0) {
+                    clearInterval(visszaszamlaloInterval);
+                    sáv.style.display = "none";
+                    idotullepesTortenet = true;
+                    alert("⏰ Letelt a 15 perces időkeret! A teszt automatikusan kiértékelésre kerül.");
+                    eredmenyKiértékelésIdotullepessel();
+                }
+                hatralevoIdo--;
+            }, 1000);
+        }
+
+        function kovetkezoKerdesMegjelenitese() {
+            const kerdesekKontener = document.getElementById("kerdesekKontener");
+            const uzenetDiv = document.getElementById("uzenetContainer");
+
+            if (aktualisKerdesIndex >= aktivKerdesLista.length) {
+                eredmenyKiértékelés();
+                return;
+            }
+
+            const kerdesObj = aktivKerdesLista[aktualisKerdesIndex];
+            uzenetDiv.textContent = `🎯 Kérdés ${aktualisKerdesIndex + 1} / ${aktivKerdesLista.length}`;
+
+            let htmlKod = `<div class="kerdes-doboz">`;
+            
+            if (kerdesObj.tipus === "szoveges") {
+                htmlKod += `<p>${aktualisKerdesIndex + 1}. ${kerdesObj.kerdes}</p>`;
+                
+                let minta = kerdesObj.szovegMinta ? kerdesObj.szovegMinta : "";
+                let darabok = minta.split(".....");
+
+                if (darabok.length > 1) {
+                    htmlKod += `<div class="szoveges-input-kontener">
+                        <span>${darabok[0]}</span>
+                        <input type="text" class="szoveges-input" id="aktualisSzovegesValasz" placeholder="Ide írd a választ..." autocomplete="off">
+                        <span>${darabok[1] || ""}</span>
+                    </div>`;
+                } else {
+                    htmlKod += `<div class="szoveges-input-kontener">
+                        <input type="text" class="szoveges-input" id="aktualisSzovegesValasz" placeholder="Ide írd a választ..." autocomplete="off">
+                        <span>${minta}</span>
+                    </div>`;
+                }
+            } else {
+                htmlKod += `<p>${aktualisKerdesIndex + 1}. ${kerdesObj.kerdes}</p>`;
+                if (kerdesObj.opciok && kerdesObj.opciok.length > 0) {
+                    kerdesObj.opciok.forEach((opcio, opcioIndex) => {
+                        let inputTipus = kerdesObj.helyesValaszok.length > 1 ? "checkbox" : "radio";
+                        htmlKod += `<label class="valasz-opcio">
+                            <input type="${inputTipus}" name="aktiv_valasz" value="${opcioIndex + 1}"> <span>${opcio}</span>
+                        </label>`;
+                    });
+                }
+            }
+            htmlKod += `</div>`;
+            
+            const gombSzoveg = (aktualisKerdesIndex === aktivKerdesLista.length - 1) ? "✔ Válasz rögzítése és Teszt befejezése" : "➡️ Következő kérdés (Nem módosítható!)";
+            htmlKod += `<button type="button" id="valaszRogzitoGomb" class="FoGomb">${gombSzoveg}</button>`;
+
+                        kerdesekKontener.innerHTML = htmlKod;
+
+            console.log('[DEBUG] innerHTML beállítva. A kerdesekKontener gyermekeinek száma:', kerdesekKontener.children.length);
+            console.log('[DEBUG] kerdesekKontener innerHTML hossza:', kerdesekKontener.innerHTML.length);
+            console.log('[DEBUG] A valaszRogzitoGomb létezik?', !!document.getElementById('valaszRogzitoGomb'));
+            console.log('[DEBUG] Aktuális kerdesIndex:', aktualisKerdesIndex, '/', aktivKerdesLista.length);
+            setTimeout(() => {
+                console.log('[DEBUG] 500ms után a valaszRogzitoGomb létezik?', !!document.getElementById('valaszRogzitoGomb'));
+            }, 500);
+
+            // iOS Safari & Chrome ugrásmentes touchend + click eseménykezelő a válasz rögzítő gombhoz
+            const rogzitoGombElm = document.getElementById("valaszRogzitoGomb");
+            if (rogzitoGombElm) {
+                let utolsoRogzitesIdo = 0;
+                const rogzitoKezelesEsemeny = function(e) {
+                    const most = Date.now();
+                    if (most - utolsoRogzitesIdo < 500) return;
+                    utolsoRogzitesIdo = most;
+
+                    if (e && e.cancelable) {
+                        e.preventDefault();
+                    }
+                    lejatszoKattintasHang();
+                    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                        document.activeElement.blur();
+                    }
+                    valaszRogziteseEsTovabb();
+                };
+
+                rogzitoGombElm.addEventListener("touchend", rogzitoKezelesEsemeny, { passive: false });
+                rogzitoGombElm.addEventListener("click", rogzitoKezelesEsemeny);
+            }
+
+            // Fókusz beállítása
+            setTimeout(() => {
+                const inp = document.getElementById("aktualisSzovegesValasz");
+                if (inp) inp.focus();
+            }, 100);
+        }
+
+        function valaszRogziteseEsTovabb() {
+            const kerdesObj = aktivKerdesLista[aktualisKerdesIndex];
+            let bejeloltekVagyBeirtak = [];
+
+            if (kerdesObj.tipus === "szoveges") {
+                const inputMezo = document.getElementById("aktualisSzovegesValasz");
+                const beirt = inputMezo ? inputMezo.value.trim() : "";
+                bejeloltekVagyBeirtak.push(beirt);
+            } else {
+                const kijeloltek = document.querySelectorAll('input[name="aktiv_valasz"]:checked');
+                if (kijeloltek.length === 0) {
+                    const uzenetDiv = document.getElementById("uzenetContainer");
+                    uzenetDiv.textContent = "⚠️ Kérlek, válassz ki egy opciót a továbblépéshez!";
+                    uzenetDiv.className = "hiba";
+                    uzenetDiv.style.display = "block";
+                    uzenetDiv.scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+                kijeloltek.forEach(inp => {
+                    let betu = String.fromCharCode(64 + parseInt(inp.value));
+                    bejeloltekVagyBeirtak.push(betu);
+                });
+            }
+
+            // Rögzítjük a választ, így azt később nem lehet megváltoztatni
+            rögzítettFelhasznaloiValaszok.push({
+                kerdesIndex: aktualisKerdesIndex,
+                valaszok: bejeloltekVagyBeirtak
+            });
+
+            aktualisKerdesIndex++;
+            kovetkezoKerdesMegjelenitese();
+        }
+
+        function rugalmasTxtFeldolgozo(szoveg) {
+            const sorok = szoveg.split(/\r?\n/).map(s => s.trim());
+            const eredmeny = [];
+
+            let aktualisKerdes = null;
+            let aktualisOpciok = [];
+            let helyesValaszok = [];
+            let osszesPont = 1;
+            let tipus = "feleletvalasztos";
+            let szovegMinta = "";
+            let helyesMdbOlvasasa = false;
+
+            for (let i = 0; i < sorok.length; i++) {
+                let sor = sorok[i];
+
+                if (sor === "") {
+                    if (aktualisKerdes) {
+                        if (aktualisOpciok.length === 0) {
+                            tipus = "szoveges";
+                        }
+                        eredmeny.push({
+                            kerdes: aktualisKerdes,
+                            tipus: tipus,
+                            szovegMinta: szovegMinta,
+                            opciok: [...aktualisOpciok],
+                            helyesValaszok: [...helyesValaszok],
+                            osszesPont: osszesPont
+                        });
+                        aktualisKerdes = null;
+                        aktualisOpciok = [];
+                        helyesValaszok = [];
+                        osszesPont = 1;
+                        tipus = "feleletvalasztos";
+                        szovegMinta = "";
+                        helyesMdbOlvasasa = false;
+                    }
+                    continue;
+                }
+
+                let tisztitottSor = sor.replace(/^[*\-\s]+/, "").toLowerCase();
+
+                if (sor.startsWith("###") || sor === "---" || tisztitottSor.includes("választási lehetőségek")) {
+                    continue;
+                }
+
+                if (tisztitottSor.startsWith("helyes") || tisztitottSor.startsWith("megoldás")) {
+                    helyesMdbOlvasasa = true;
+                    let utanResz = sor.replace(/^[*\-\s]*(helyes válasz|megoldás)[:\s]*/i, "").trim();
+                    if (utanResz) {
+                        if (tipus === "szoveges" || aktualisOpciok.length === 0) {
+                            helyesValaszok = utanResz.split(/\/|,/).map(v => v.trim()).filter(v => v.length > 0);
+                        } else {
+                            const betuk = utanResz.match(/[a-zA-Z]/g);
+                            if (betuk) {
+                                helyesValaszok = betuk.map(b => b.toUpperCase());
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+                if (tisztitottSor.startsWith("pontszám") || tisztitottSor.startsWith("pont")) {
+                    helyesMdbOlvasasa = false;
+                    const szamMatch = sor.match(/\d+/);
+                    if (szamMatch) {
+                        osszesPont = parseInt(szamMatch[0]);
+                    }
+                    continue;
+                }
+
+                if (helyesMdbOlvasasa && tipus === "feleletvalasztos" && aktualisOpciok.length > 0) {
+                    if (sor.length === 1 && /^[a-zA-Z]$/.test(sor)) {
+                        helyesValaszok.push(sor.toUpperCase());
+                        continue;
+                    } else if (sor.length > 1 && !tisztitottSor.startsWith("pont") && !tisztitottSor.startsWith("a)") && !tisztitottSor.startsWith("b)")) {
+                        helyesMdbOlvasasa = false;
+                    }
+                } else if (helyesMdbOlvasasa) {
+                    if (!tisztitottSor.startsWith("pont")) {
+                        helyesValaszok.push(sor.replace(/^[*\-\s]+/, ""));
+                        continue;
+                    }
+                }
+
+                if (!aktualisKerdes) {
+                    aktualisKerdes = sor;
+                    if (sor.includes(".....") || 
+                        tisztitottSor.includes("fejezd be") || 
+                        tisztitottSor.includes("egészítsd ki") || 
+                        tisztitottSor.includes("írd be a mondatba") || 
+                        tisztitottSor.includes("kezd el a mondatot") ||
+                        tisztitottSor.includes("pótold a hiányzó")) {
+                        tipus = "szoveges";
+                    }
+                } else {
+                    let valaszMinta = /^[a-eA-E][\)\.]/.test(tisztitottSor) || /^[*\-\s]+[a-eA-E][\)\.]/.test(sor);
+
+                    if (tipus === "szoveges" && !valaszMinta && !helyesMdbOlvasasa) {
+                        if (!szovegMinta) {
+                            szovegMinta = sor.replace(/^[*\-\s]+/, "");
+                        } else {
+                            szovegMinta += " " + sor.replace(/^[*\-\s]+/, "");
+                        }
+                    } else if (!valaszMinta && !helyesMdbOlvasasa && (sor.includes(".....") || 
+                                              tisztitottSor.includes("fejezd be") || 
+                                              tisztitottSor.includes("egészítsd ki") || 
+                                              tisztitottSor.includes("írd be") || 
+                                              tisztitottSor.includes("pótold"))) {
+                        tipus = "szoveges";
+                        szovegMinta = sor.replace(/^[*\-\s]+/, "");
+                    } else if (!valaszMinta && !helyesMdbOlvasasa && tipus === "szoveges") {
+                        szovegMinta = sor.replace(/^[*\-\s]+/, "");
+                    } else if (!helyesMdbOlvasasa) {
+                        aktualisOpciok.push(sor);
+                    }
+                }
+            }
+
+            if (aktualisKerdes) {
+                if (aktualisOpciok.length === 0) {
+                    tipus = "szoveges";
+                }
+                eredmeny.push({
+                    kerdes: aktualisKerdes,
+                    tipus: tipus,
+                    szovegMinta: szovegMinta,
+                    opciok: [...aktualisOpciok],
+                    helyesValaszok: [...helyesValaszok],
+                    osszesPont: osszesPont
+                });
+            }
+
+            return eredmeny;
+        }
+
+        function eredmenyKiértékelésIdotullepessel() {
+            while (rögzítettFelhasznaloiValaszok.length < aktivKerdesLista.length) {
+                rögzítettFelhasznaloiValaszok.push({
+                    kerdesIndex: rögzítettFelhasznaloiValaszok.length,
+                    valaszok: [""]
+                });
+            }
+            eredmenyKiértékelés();
+        }
+
+        function eredmenyKiértékelés() {
+            try {
+                if (visszaszamlaloInterval) {
+                    clearInterval(visszaszamlaloInterval);
+                    const sav = document.getElementById("visszaszamlaloSáv");
+                    if (sav) sav.style.display = "none";
+                }
+
+                // Idő kiszámítása a teszt indításától a befejezésig
+                let idoFelhasznalasSzoveg = "";
+                let idoMegjegyzes = "";
+
+                if (tesztKezdesIdo) {
+                    const tesztVegIdo = new Date();
+                    const elteltMp = Math.floor((tesztVegIdo - tesztKezdesIdo) / 1000);
+
+                    if (idotullepesTortenet || elteltMp >= 900) {
+                        idoFelhasznalasSzoveg = "15:00";
+                        idoMegjegyzes = "15 perc (Időtúllépés miatt letiltva)";
+                    } else {
+                        const perc = Math.floor(elteltMp / 60);
+                        const mp = elteltMp % 60;
+                        idoFelhasznalasSzoveg = `${String(perc).padStart(2, '0')}:${String(mp).padStart(2, '0')}`;
+                        idoMegjegyzes = `${idoFelhasznalasSzoveg} perc`;
+                    }
+                } else {
+                    idoFelhasznalasSzoveg = "00:00";
+                    idoMegjegyzes = "00:00 perc";
+                }
+
+                const trenerInput = document.getElementById("trenerNev").value.trim();
+                const nevInput = document.getElementById("vizsgazoNev").value.trim();
+                const kutInput = document.getElementById("kutSzam").value.trim();
+
+                let szerzettPontok = 0;
+                let osszesAdhatoPont = 0;
+                let statisztikaAdatokLista = [];
+                
+                let statisztikaHtml = `<div class="statisztika-doboz">
+                    <h3>📊 Részletes Statisztika és Válaszelemzés</h3>
+                    <p><strong>A tréner neve:</strong> ${trenerInput}</p>
+                    <p><strong>Vizsgázó választott neve:</strong> ${nevInput}</p>
+                    <p><strong>Kútszám:</strong> ${kutInput}</p>
+                    <p><strong>Idő felhasználása:</strong> ${idoMegjegyzes}</p>
+                    <ul class="statisztika-lista">`;
+
+                aktivKerdesLista.forEach((kerdesObj, index) => {
+                    osszesAdhatoPont += kerdesObj.osszesPont;
+                    let elemSiker = false;
+                    let elemReszletekHtml = "";
+                    let elemReszletekSiman = [];
+
+                    const rogzitettObj = rögzítettFelhasznaloiValaszok.find(r => r.kerdesIndex === index);
+                    const bejeloltekVagyBeirtak = rogzitettObj ? rogzitettObj.valaszok : [];
+
+                    if (kerdesObj.tipus === "szoveges") {
+                        const beirtSzoveg = bejeloltekVagyBeirtak[0] || "";
+                        const normalizaltBeirt = szovegNormalizalasa(beirtSzoveg);
+                        
+                                                if (index === 0) {
+                            let norm = szovegNormalizalasa(beirtSzoveg);
+
+                            let match100Arabica = (norm.includes("100") && (norm.includes("arabika") || norm.includes("arabica")));
+                            let matchCitrusos = norm.includes("citrusos");
+                            let matchCsokis = norm.includes("csokis");
+                            let matchCsokolades = (norm.includes("csokolad") || norm.includes("csokolades"));
+
+                            let count = 0;
+                            if (match100Arabica) count++;
+                            if (matchCitrusos) count++;
+                            if (matchCsokis) count++;
+                            if (matchCsokolades) count++;
+
+                            elemSiker = (count >= 2) && norm.length > 0;
+                        } else {
+                            elemSiker = kerdesObj.helyesValaszok.some(helyes => szovegNormalizalasa(helyes) === normalizaltBeirt) && normalizaltBeirt.length > 0;
+                        }
+                        const helyesValaszokMutatasa = kerdesObj.helyesValaszok.join(" / ");
+
+                        if (elemSiker) {
+                            szerzettPontok += kerdesObj.osszesPont;
+                            elemReszletekHtml = `<div class="opcio-reszlet opcio-jo-helyes">
+                                <span>✍️ Beírt válasz: <em>${beirtSzoveg}</em></span>
+                                <span>✅ Helyes (+${kerdesObj.osszesPont} pont)</span>
+                            </div>`;
+                            elemReszletekSiman.push(`Beirt valasz: ${beirtSzoveg} (HELYES)`);
+                        } else {
+                            elemReszletekHtml = `<div class="opcio-reszlet opcio-rossz-bejelolt">
+                                <span>✍️ Beírt válasz: <em>${beirtSzoveg || "Nem adott meg választ"}</em></span>
+                                <span>❌ Hibás</span>
+                            </div>
+                            <div class="opcio-reszlet opcio-jo-helyes">
+                                <span>💡 Helyes válasz lett volna: <em>${helyesValaszokMutatasa}</em></span>
+                                <span>✅ Elvárt</span>
+                            </div>`;
+                            elemReszletekSiman.push(`Beirt valasz: ${beirtSzoveg || "Nincs"} (HIBAS)`);
+                            elemReszletekSiman.push(`Elvart valasz: ${helyesValaszokMutatasa}`);
+                        }
+
+                    } else {
+                        let talaltJok = bejeloltekVagyBeirtak.filter(b => kerdesObj.helyesValaszok.includes(b)).length;
+                        let talaltRosszak = bejeloltekVagyBeirtak.filter(b => !kerdesObj.helyesValaszok.includes(b)).length;
+                        let osszesJoDb = kerdesObj.helyesValaszok.length;
+
+                        elemSiker = (talaltJok === osszesJoDb && talaltRosszak === 0 && bejeloltekVagyBeirtak.length === osszesJoDb);
+                        if (elemSiker) szerzettPontok += kerdesObj.osszesPont;
+
+                        kerdesObj.opciok.forEach((opcioSzoveg, opcioIdx) => {
+                            let opcioBetu = String.fromCharCode(65 + opcioIdx);
+                            let isBejelolve = bejeloltekVagyBeirtak.includes(opcioBetu);
+                            let isHelyesOpcio = kerdesObj.helyesValaszok.includes(opcioBetu);
+
+                            if (isBejelolve && isHelyesOpcio) {
+                                elemReszletekHtml += `<div class="opcio-reszlet opcio-jo-helyes">
+                                    <span>[x] ${opcioSzoveg}</span>
+                                    <span>✅ Bejelölve (Helyes)</span>
+                                </div>`;
+                                elemReszletekSiman.push(`[X] ${opcioSzoveg} - HELYES`);
+                            } else if (isBejelolve && !isHelyesOpcio) {
+                                elemReszletekHtml += `<div class="opcio-reszlet opcio-rossz-bejelolt">
+                                    <span>[x] ${opcioSzoveg}</span>
+                                    <span>❌ Bejelölve (Hibás választás)</span>
+                                </div>`;
+                                elemReszletekSiman.push(`[X] ${opcioSzoveg} - HIBAS VALASZTAS`);
+                            } else if (!isBejelolve && isHelyesOpcio) {
+                                elemReszletekHtml += `<div class="opcio-reszlet opcio-jo-kihagyott">
+                                    <span>[ ] ${opcioSzoveg}</span>
+                                    <span>⚠️ Kihagyott helyes opció</span>
+                                </div>`;
+                                elemReszletekSiman.push(`[ ] ${opcioSzoveg} - KIHAGYOTT HELYES OPCIO`);
+                            } else {
+                                elemReszletekHtml += `<div class="opcio-reszlet opcio-semleges">
+                                    <span>[ ] ${opcioSzoveg}</span>
+                                    <span>-</span>
+                                </div>`;
+                                elemReszletekSiman.push(`[ ] ${opcioSzoveg}`);
+                            }
+                        });
+                    }
+
+                    statisztikaHtml += `<li class="statisztika-elem ${elemSiker ? 'helyes-kartya' : 'hibas-kartya'}">
+                        <div class="statisztika-fejlec">
+                            <span>${index + 1}. Kérdés: ${kerdesObj.kerdes}</span>
+                            <span>${elemSiker ? '✅ Helyes' : '❌ Hibás'} (${elemSiker ? kerdesObj.osszesPont : 0}/${kerdesObj.osszesPont} pont)</span>
+                        </div>
+                        <div>${elemReszletekHtml}</div>
+                    </li>`;
+
+                    statisztikaAdatokLista.push({
+                        sorszam: index + 1,
+                        kerdes: kerdesObj.kerdes,
+                        allapot: elemSiker ? "Helyes" : "Hibás",
+                        reszletek: elemReszletekSiman,
+                        pont: elemSiker ? kerdesObj.osszesPont : 0,
+                        maxPont: kerdesObj.osszesPont
+                    });
+                });
+
+                statisztikaHtml += `</ul></div>`;
+
+                const szazalek = (szerzettPontok / osszesAdhatoPont) * 100;
+                const megfelelt = szazalek >= 75;
+
+                utolsoEredmenyAdatok = {
+                    trener: trenerInput,
+                    nev: nevInput,
+                    kut: kutInput,
+                    szerzett: szerzettPontok,
+                    osszes: osszesAdhatoPont,
+                    szazalek: szazalek.toFixed(1),
+                    allapot: megfelelt ? 'MEGFELELT' : 'NEM FELELT MEG',
+                    idoFelhasznalas: idoMegjegyzes,
+                    lista: statisztikaAdatokLista
+                };
+
+                const kerdesekKontener = document.getElementById("kerdesekKontener");
+                let eredmenySzveg = `<div class="tarolo ${megfelelt ? 'siker' : 'figyelmeztetes'}" style="margin-bottom: 14px;">
+                    🎉 Teszt vége (${nevInput} - Kút: ${kutInput})!<br>
+                    Elért pontok: <strong>${szerzettPontok} / ${osszesAdhatoPont}</strong> (${szazalek.toFixed(1)}%)<br>
+                    Állapot: <span style="color: ${megfelelt ? '#065f46' : '#991b1b'}">${megfelelt ? 'MEGFELELT (>= 75%)' : 'NEM FELELT MEG (< 75%)'}</span><br>
+                    Idő felhasználása: <strong>${idoMegjegyzes}</strong>
+                </div>
+                <div class="tarolo" style="margin-bottom: 20px; text-align: center;">
+                    <div id="attekintesVisszaszamlaloDoboz" style="font-weight: 700; font-size: 16px; color: #991b1b; background: #fee2e2; border: 1px solid #f87171; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;">
+                        ⏱️ A válaszok megtekintésére hátralévő idő: <span id="attekintesTimer">10:00</span>
+                    </div>
+                    <button type="button" id="tesztVegeLezaroGomb" class="FoGomb" style="margin-top: 0;" onclick="tesztVeglegesLezarasa()">🏁 Teszt vége</button>
+                </div>`;
+                
+                kerdesekKontener.innerHTML = eredmenySzveg + statisztikaHtml;
+
+                // Elindítjuk a Google Drive mentést a háttérben, és a 10:00 perces visszaszámlálót az eredmények megtekintéséhez
+                eredmenyGoogleDriveMentes();
+                inditAttekintesVisszaszamlalot(10 * 60);
+
+            } catch (err) {
+                alert("Hiba történt a kiértékelés során: " + err.message);
+            }
+        }
+
+        function ekezetetTelenit(str) {
+            if (!str) return "";
+            return str
+                .replace(/á/g, 'a').replace(/Á/g, 'A')
+                .replace(/é/g, 'e').replace(/É/g, 'E')
+                .replace(/í/g, 'i').replace(/Í/g, 'I')
+                .replace(/ó/g, 'o').replace(/Ó/g, 'O')
+                .replace(/ö/g, 'o').replace(/Ö/g, 'O')
+                .replace(/ő/g, 'o').replace(/Ő/g, 'O')
+                .replace(/ú/g, 'u').replace(/Ú/g, 'U')
+                .replace(/ü/g, 'u').replace(/Ü/g, 'U')
+                .replace(/ű/g, 'u').replace(/Ű/g, 'U');
+        }
+
+        function nativPdfNyomtatas() {
+            window.print();
+        }
+
+        // Beépített, 100% offline, külső CDN-független PDF 1.4 generátor (Base64 kimenettel a Google Drive feltöltéshez)
+                // Beépített, 100% offline, külső CDN-független PDF 1.4 generátor színes támogatással (Base64 kimenettel)
+        function beepitettOfflinePdfBase64() {
+            const elemek = []; // { text: "...", color: [r,g,b] }
+            
+            elemek.push({ text: ekezetetTelenit("Pointb Trening Kozpont - Reszletes Teszt Eredmeny"), color: [0, 0.18, 0.38] });
+            elemek.push({ text: "--------------------------------------------------------------------", color: [0.5, 0.5, 0.5] });
+            elemek.push({ text: ekezetetTelenit(`A trener neve: ${utolsoEredmenyAdatok.trener}`), color: [0.2, 0.2, 0.2] });
+            elemek.push({ text: ekezetetTelenit(`Vizsgazo valasztott neve: ${utolsoEredmenyAdatok.nev}`), color: [0.2, 0.2, 0.2] });
+            elemek.push({ text: ekezetetTelenit(`Kutszam: ${utolsoEredmenyAdatok.kut}`), color: [0.2, 0.2, 0.2] });
+            elemek.push({ text: ekezetetTelenit(`Elert pontok: ${utolsoEredmenyAdatok.szerzett} / ${utolsoEredmenyAdatok.osszes} (${utolsoEredmenyAdatok.szazalek}%)`), color: [0.2, 0.2, 0.2] });
+            elemek.push({ text: ekezetetTelenit(`Allapot: ${utolsoEredmenyAdatok.allapot}`), color: [0.2, 0.2, 0.2] });
+            elemek.push({ text: ekezetetTelenit(`Ido felhasznalasa: ${utolsoEredmenyAdatok.idoFelhasznalas}`), color: [0.2, 0.2, 0.2] });
+            elemek.push({ text: "--------------------------------------------------------------------", color: [0.5, 0.5, 0.5] });
+            elemek.push({ text: ekezetetTelenit("Reszletes Kerdes es Valaszelemzes:"), color: [0, 0.18, 0.38] });
+            elemek.push({ text: "", color: [0, 0, 0] });
+
+            if (utolsoEredmenyAdatok.lista && utolsoEredmenyAdatok.lista.length > 0) {
+                utolsoEredmenyAdatok.lista.forEach((item) => {
+                    const allapotStr = item.allapot.toUpperCase();
+                    const fejlecColor = (allapotStr === "HELYES") ? [0, 0.53, 0.31] : [0, 0.25, 0.5]; // Kérdés kék, vagy ha úgy tetszik
+                    const fejlecText = ekezetetTelenit(`${item.sorszam}. Kerdes: ${item.kerdes} [${allapotStr}]`);
+                    
+                    fejlecText.match(/.{1,85}(\s|$)/g).forEach(s => {
+                        elemek.push({ text: s.trim(), color: [0, 0.25, 0.5] }); // Kérdések kékek
+                    });
+
+                    item.reszletek.forEach(reszletSor => {
+                        const tisztaReszlet = ekezetetTelenit(reszletSor);
+                        let sorColor = [0.2, 0.2, 0.2];
+                        if (tisztaReszlet.includes("HELYES")) {
+                            sorColor = [0, 0.53, 0.31]; // Zöld
+                        } else if (tisztaReszlet.includes("HIBAS") || tisztaReszlet.includes("KIHAGYOTT")) {
+                            sorColor = [0.8, 0.1, 0.1]; // Piros
+                        }
+                        tisztaReszlet.match(/.{1,85}(\s|$)/g).forEach(s => {
+                            elemek.push({ text: "   " + s.trim(), color: sorColor });
+                        });
+                    });
+                    elemek.push({ text: "", color: [0, 0, 0] });
+                });
+            }
+            elemek.push({ text: "core code by prinyo", color: [0.4, 0.4, 0.4] });
+
+            // Oldalakra bontás (max 45 elem / oldal)
+            const oldalak = [];
+            for (let i = 0; i < elemek.length; i += 45) {
+                oldalak.push(elemek.slice(i, i + 45));
+            }
+            if (oldalak.length === 0) oldalak.push([{ text: "Pointb Trening Kozpont", color: [0,0,0] }]);
+
+            function pdfEscape(str) {
+                return str.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+            }
+
+            let pdfObjektek = [];
+            pdfObjektek[1] = "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+            pdfObjektek[3] = "3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n";
+
+            const pageObjIds = [];
+            let nextObjId = 4;
+
+            oldalak.forEach((oldalElemek) => {
+                const pageId = nextObjId++;
+                const contentId = nextObjId++;
+                pageObjIds.push(pageId);
+
+                let streamLines = ["BT", "/F1 10 Tf", "40 790 Td", "14 TL"];
+                let currentColor = "";
+
+                oldalElemek.forEach((el, idx) => {
+                    const colorStr = `${el.color[0].toFixed(2)} ${el.color[1].toFixed(2)} ${el.color[2].toFixed(2)} rg`;
+                    if (colorStr !== currentColor) {
+                        streamLines.push(colorStr);
+                        currentColor = colorStr;
+                    }
+                    if (idx === 0) {
+                        streamLines.push(`(${pdfEscape(el.text)}) Tj`);
+                    } else {
+                        streamLines.push(`T* (${pdfEscape(el.text)}) Tj`);
+                    }
+                });
+                streamLines.push("ET");
+                const streamData = streamLines.join("\n");
+
+                pdfObjektek[contentId] = `${contentId} 0 obj\n<< /Length ${streamData.length} >>\nstream\n${streamData}\nendstream\nendobj\n`;
+                pdfObjektek[pageId] = `${pageId} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>\nendobj\n`;
+            });
+
+            pdfObjektek[2] = `2 0 obj\n<< /Type /Pages /Kids [${pageObjIds.map(id => id + " 0 R").join(" ")}] /Count ${pageObjIds.length} >>\nendobj\n`;
+
+            let pdfBody = "%PDF-1.4\n";
+            const offsets = [0];
+            for (let id = 1; id < pdfObjektek.length; id++) {
+                offsets[id] = pdfBody.length;
+                pdfBody += pdfObjektek[id];
+            }
+
+            const xrefOffset = pdfBody.length;
+            pdfBody += `xref\n0 ${pdfObjektek.length}\n`;
+            pdfBody += "0000000000 65535 f \n";
+            for (let id = 1; id < pdfObjektek.length; id++) {
+                pdfBody += String(offsets[id]).padStart(10, "0") + " 00000 n \n";
+            }
+            pdfBody += `trailer\n<< /Size ${pdfObjektek.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+            return btoa(pdfBody);
+        }
+
+
+function megbízhatóPDFGenerálás() {
+            if (window.jspdf && window.jspdf.jsPDF) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                let y = 20;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.text(ekezetetTelenit("Pointb Trening Kozpont - Reszletes Teszt Eredmeny"), 14, y);
+                return { output: () => doc.output('datauristring') };
+            }
+            const base64Str = beepitettOfflinePdfBase64();
+            return {
+                output: () => "data:application/pdf;base64," + base64Str
+            };
+        }
+
+        function inditAttekintesVisszaszamlalot(mp) {
+            const timerSpan = document.getElementById("attekintesTimer");
+            let hatralevo = mp;
+
+            if (attekintesVisszaszamlaloInterval) {
+                clearInterval(attekintesVisszaszamlaloInterval);
+            }
+
+            attekintesVisszaszamlaloInterval = setInterval(() => {
+                hatralevo--;
+                if (hatralevo < 0) {
+                    clearInterval(attekintesVisszaszamlaloInterval);
+                    tesztVeglegesLezarasa();
+                    return;
+                }
+                const perc = Math.floor(hatralevo / 60);
+                const masodperc = hatralevo % 60;
+                if (timerSpan) {
+                    timerSpan.textContent = `${String(perc).padStart(2, '0')}:${String(masodperc).padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function tesztVeglegesLezarasa() {
+            if (attekintesVisszaszamlaloInterval) {
+                clearInterval(attekintesVisszaszamlaloInterval);
+                attekintesVisszaszamlaloInterval = null;
+            }
+            lejatszoKattintasHang();
+            const foKontener = document.querySelector(".fo-kontener");
+            if (foKontener) {
+                foKontener.style.display = "none";
+            }
+            const lablice = document.querySelector(".oldal-lablice");
+            if (lablice) {
+                lablice.style.display = "none";
+            }
+            const zaroLap = document.getElementById("koszonoZaroKepernyo");
+            if (zaroLap) {
+                zaroLap.style.display = "flex";
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function eredmenyGoogleDriveMentes() {
+            try {
+                if (!utolsoEredmenyAdatok) {
+                    alert("Nincs elérhető eredmény a mentéshez!");
+                    return;
+                }
+
+                const gomb = document.getElementById("driveGomb");
+
+                const doc = megbízhatóPDFGenerálás();
+
+                const ma = new Date();
+                const ev = ma.getFullYear();
+                const ho = String(ma.getMonth() + 1).padStart(2, '0');
+                const nap = String(ma.getDate()).padStart(2, '0');
+                const datumStr = `${ev}-${ho}-${nap}`;
+
+                const tisztaNev = utolsoEredmenyAdatok.nev.replace(/[^a-zA-Z0-9éáőúűóüöÍÉÁŐÚŰÓÚÜÖ\s]/g, "").replace(/\s+/g, "_");
+                const tisztaTrener = utolsoEredmenyAdatok.trener.replace(/[^a-zA-Z0-9éáőúűóüöÍÉÁŐÚŰÓÚÜÖ\s]/g, "").replace(/\s+/g, "_");
+                const kutSzamStr = utolsoEredmenyAdatok.kut;
+                const eredmenySzazalekStr = `${utolsoEredmenyAdatok.szazalek}%`;
+
+                const fajlNev = `${tisztaNev}_${tisztaTrener}_${kutSzamStr}_${datumStr}_${eredmenySzazalekStr}.pdf`;
+                const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+                const uzenetDiv = document.getElementById("uzenetContainer");
+                uzenetDiv.textContent = "Feltöltés a Google Drive-ra folyamatban...";
+                uzenetDiv.className = "info";
+
+                fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({ filename: fajlNev, base64: pdfBase64 })
+                })
+                .then(() => {
+                    uzenetDiv.textContent = "✅ A részletes PDF sikeresen elküldve a Google Drive felhőbe!";
+                    uzenetDiv.className = "siker";
+                    const zaroStatusz = document.getElementById("koszonoDriveStatusz");
+                    if (zaroStatusz) {
+                        zaroStatusz.textContent = "✅ Az eredmények sikeresen rögzítve a Google Drive-on!";
+                    }
+
+                })
+                .catch(err => {
+                    uzenetDiv.textContent = "❌ Hiba a küldés során: " + err.message;
+                    uzenetDiv.className = "hiba";
+                    const zaroStatusz = document.getElementById("koszonoDriveStatusz");
+                    if (zaroStatusz) {
+                        zaroStatusz.textContent = "⚠️ Hiba történt a Drive feltöltés során. Nyisd meg az eredményeket az újraküldéshez.";
+                    }
+
+                });
+
+            } catch (err) {
+                alert("Hiba: " + err.message);
+                const gomb = document.getElementById("driveGomb");
+                if (gomb) {
+                    gomb.disabled = false;
+                    gomb.textContent = "☁️ Feltöltés Google Drive-ra";
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
