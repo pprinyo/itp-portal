@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointb Tréning Központ | Interaktív Tesztelő Portál (ITP)</title>
+    <meta name="author" content="Printz Péter">
+    <meta name="copyright" content="Printz Péter - core code by prinyo">
+    <meta property="og:url" content="https://pprinyo.github.io/itp-portal/">
+    <link rel="canonical" href="https://pprinyo.github.io/itp-portal/">
+    <!-- URL: https://pprinyo.github.io/itp-portal/ -->
+    <!-- Author: Printz Péter | core code by prinyo | Pointb ITP v2.15 -->
+    <style>
+        :root {
+            --omv-blue: #002D62; 
+            --omv-light-blue: #004080;
+            --omv-green: #008751; 
+            --omv-green-light: #00a85d;
+            --gradient-bg: linear-gradient(135deg, #002D62 0%, #004080 50%, #00663d 100%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --border-color: #94a3b8;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        body, .fo-kontener, .tarolo, .kerdes-doboz, .kerdes-doboz p, .valasz-opcio, #uzenetContainer, #visszaszamlaloSáv, .cim-kontener, .pointb-kulon-doboz, .oldal-lablice {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            outline: none;
+        }
+
+        input[type="text"], input[type="tel"], select {
+            user-select: text;
+            -webkit-user-select: text;
+            -webkit-touch-callout: default;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .fo-kontener {
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 0.5s ease-out;
+            flex: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pointb-kulon-doboz {
+            background: #ffffff;
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            border-left: 6px solid var(--omv-green);
+            display: flex;
+            align-items: center;
+        }
+
+        .pointb-cimke {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--omv-green);
+            display: block;
+        }
+
+        /* Visszaszámláló sáv a teszt indítása alatt */
+        #visszaszamlaloSáv {
+            background: #991b1b;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
+            border: 1px solid #f87171;
+        }
+
+        .cim-kontener {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-weight: 800;
+            margin: 0 0 6px 0;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .verzio-info {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .tarolo {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-left: 4px solid var(--omv-green);
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--omv-blue);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="file"], input[type="text"], input[type="tel"], select {
+            width: 100%;
+            padding: 10px 14px;
+            background: #f0fdf4;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, input[type="tel"]:focus, select:focus {
+            border-color: var(--omv-green);
+            box-shadow: 0 0 0 3px rgba(0, 135, 81, 0.2);
+        }
+
+
+        .kut-allomas-sor {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .kut-mezo-doboz {
+            width: 120px;
+            flex: 0 0 120px;
+        }
+        .allomas-nev-doboz {
+            flex: 1 1 220px;
+            min-width: 0;
+        }
+
+        input[readonly] {
+            background: #e2e8f0;
+            color: var(--omv-blue);
+            font-weight: 700;
+            cursor: default;
+        }
+
+        .radio-csoport {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+            background: #f0fdf4;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .radio-opcio {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--omv-blue);
+        }
+
+        .radio-opcio input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--omv-green);
+            transform: scale(1.2);
+        }
+
+        .input-csoport {
+            margin-bottom: 16px;
+        }
+
+        .input-csoport:last-child {
+            margin-bottom: 0;
+        }
+
+        input[type="file"] {
+            border: 2px dashed var(--omv-green);
+            cursor: pointer;
+            color: var(--text-muted);
+            background: #f8fafc;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--omv-green);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: background 0.2s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--omv-green-light);
+        }
+
+        .FoGomb {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--omv-green) 0%, #00663d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 135, 81, 0.4);
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .FoGomb:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .FoGomb:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 135, 81, 0.6);
+        }
+
+        .drive-gomb {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .drive-gomb:hover:not(:disabled) {
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.6);
+        }
+
+        .kerdes-doboz {
+            background: #ffffff;
+            border-left: 5px solid var(--omv-green);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        .kerdes-doboz p {
+            margin-top: 0;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 17px;
+        }
+
+        .valasz-opcio {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin: 12px 0;
+            padding: 6px 0;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0;
+            box-shadow: none !important;
+            outline: none !important;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .valasz-opcio:hover, .valasz-opcio:active, .valasz-opcio:focus, .valasz-opcio:focus-within {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        .valasz-opcio input {
+            margin-right: 12px;
+            accent-color: var(--omv-green);
+            transform: scale(1.3);
+            cursor: pointer;
+            outline: none !important;
+            box-shadow: none !important;
+            flex-shrink: 0;
+        }
+
+        .szoveges-input-kontener {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0fdf4;
+            padding: 12px;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .szoveges-input {
+            padding: 8px 12px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            width: 100%;
+            max-width: 500px;
+            transition: border-color 0.2s;
+        }
+
+        .szoveges-input:focus {
+            border-color: var(--omv-green);
+            box-shadow: 0 0 0 3px rgba(0, 135, 81, 0.2);
+        }
+
+        #uzenetContainer {
+            margin-top: 20px;
+            padding: 14px 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            display: none;
+        }
+
+        #uzenetContainer:not(:empty) {
+            display: block;
+        }
+
+        .hiba {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #f87171;
+        }
+
+        .siker {
+            color: #065f46;
+            background: #d1fae5;
+            border: 1px solid #34d399;
+        }
+
+        .info {
+            color: #065f46;
+            background: #e6f4ed;
+            border: 1px solid #008751;
+        }
+
+        .figyelmeztetes {
+            color: #9a3412;
+            background: #ffedd5;
+            border: 1px solid #fdba74;
+        }
+
+        .statisztika-doboz {
+            background: #ffffff;
+            padding: 24px;
+            margin-top: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .statisztika-lista {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .statisztika-elem {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .statisztika-elem.helyes-kartya {
+            border-left: 6px solid var(--omv-green);
+        }
+
+        .statisztika-elem.hibas-kartya {
+            border-left: 6px solid #dc2626;
+        }
+
+        .statisztika-fejlec {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .opcio-reszlet {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .opcio-jo-helyes {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            font-weight: 600;
+        }
+
+        .opcio-rossz-bejelolt {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            font-weight: 600;
+        }
+
+        .opcio-jo-kihagyott {
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fde047;
+            font-weight: 600;
+        }
+
+        .opcio-semleges {
+            background: #ffffff;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .oldal-lablice {
+            margin-top: 30px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        /* Teljes képernyős köszönő záróoldal a teszt végén */
+        #koszonoZaroKepernyo {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            min-height: 100vh;
+            background: var(--gradient-bg);
+            color: #ffffff;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .koszono-tartalom {
+            max-width: 720px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(0, 135, 81, 0.75) 0%, rgba(0, 102, 61, 0.85) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .koszono-cim {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 18px 0;
+            line-height: 1.35;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .koszono-alairas {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 28px 0;
+            line-height: 1.4;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .koszono-statusz {
+            font-size: 14px;
+            color: #ffffff;
+            margin-top: 10px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            background: rgba(0, 120, 215, 0.55);
+            border: 1px solid rgba(135, 206, 250, 0.5);
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .koszono-eredmeny-gomb {
+            margin-top: 26px;
+            background: rgba(0, 120, 215, 0.65);
+            color: #ffffff;
+            border: 1px solid rgba(135, 206, 250, 0.6);
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .koszono-eredmeny-gomb:hover {
+            background: rgba(0, 140, 245, 0.85);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+    
+        @media print {
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .fo-kontener { max-width: 100% !important; }
+            .tarolo, .statisztika-doboz, .kerdes-doboz { border: 1px solid #ccc !important; box-shadow: none !important; background: white !important; }
+            .FoGomb, #koszonoZaroKepernyo, .oldal-lablice, .pointb-kulon-doboz { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fo-kontener">
+        <div class="pointb-kulon-doboz">
+            <span class="pointb-cimke">Pointb Tréning Központ</span>
+        </div>
+
+        <div class="cim-kontener">
+            <h2>Interaktív Tesztelő Portál (ITP)</h2>
+            <div class="verzio-info">v2.15 updated: 2026.11.24</div>
+        </div>
+
+        <div class="tarolo" id="beallitasokKontener">
+            <div class="input-csoport">
+                <label for="trenerNev">A tréner neve:</label>
+                <select id="trenerNev">
+                    <option value="">-- Válassz trénert --</option>
+                    <option value="Gyöngyösi György">Gyöngyösi György</option>
+                    <option value="Menyhárt Zoltán">Menyhárt Zoltán</option>
+                    <option value="Molnár Balázs">Molnár Balázs</option>
+                    <option value="Paulovics Tímea">Paulovics Tímea</option>
+                    <option value="Szirtes Tamás">Szirtes Tamás</option>
+                </select>
+            </div>
+            <div class="input-csoport" style="margin-top: 16px;">
+                <label for="vizsgazoNev">Vizsgázó választott neve:</label>
+                <input type="text" id="vizsgazoNev" placeholder="">
+            </div>
+            <div class="input-csoport" style="margin-top: 16px;">
+                <div class="kut-allomas-sor">
+                    <div class="kut-mezo-doboz">
+                        <label for="kutSzam">Kútszám:</label>
+                        <input type="text" id="kutSzam" minlength="4" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" placeholder="0000">
+                    </div>
+                    <div class="allomas-nev-doboz">
+                        <label for="toltoallomasNev">Töltőállomás neve:</label>
+                        <input type="text" id="toltoallomasNev" readonly placeholder="4 jegyű kútszám után automatikusan kitöltődik">
+                    </div>
+                </div>
+            </div>
+            <div class="input-csoport" style="margin-top: 16px;">
+                <label for="teruletiVezeto">Területi vezető:</label>
+                <input type="text" id="teruletiVezeto" readonly placeholder="Kútszám megadása után automatikusan kitöltődik">
+            </div>
+
+            <div class="input-csoport" style="margin-top: 20px;">
+                <label>Kérdéssor kiválasztása:</label>
+                <div class="radio-csoport">
+                    <label class="radio-opcio">
+                        <input type="radio" name="kerdessorValaszto" value="negyedeves" checked>
+                        Aktuális negyedéves kérdéssor
+                    </label>
+                    <label class="radio-opcio">
+                        <input type="radio" name="kerdessorValaszto" value="sajat">
+                        Saját TXT fájl feltöltése
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-csoport" id="fajlBeolvasoCsoport" style="display: none; margin-top: 16px;">
+                <label for="fajlBeolvaso">Válaszd ki a kérdéseket tartalmazó TXT fájlt:</label>
+                <input type="file" id="fajlBeolvaso" accept=".txt">
+            </div>
+        </div>
+
+        <div class="tarolo" id="inditoKontener">
+            <button type="button" id="inditoGomb" class="FoGomb">🚀 Teszt indítása</button>
+            <div id="jsStatuszJelzo" style="margin-top: 10px; font-size: 12px; text-align: center; color: #991b1b; font-weight: 600;">
+                ⚠️ Ha ezt a piros figyelmeztetést látod, a böngésző előnézeti módban tiltja a programkódot! Nyisd meg a fájlt rendes weboldalként (http/https)!
+            </div>
+        </div>
+
+        <div id="uzenetContainer"></div>
+
+        <div id="visszaszamlaloSáv">⏱️ Hátralévő idő: <span id="visszaszamlaloTimer">15:00</span></div>
+
+        <div id="kerdesekKontener"></div>
+    </div>
+
+    <div class="oldal-lablice">
+        core code by prinyo
+    </div>
+
+    <div id="koszonoZaroKepernyo" style="text-align: center; justify-content: center; align-items: center;">
+        <div class="koszono-tartalom" style="text-align: center; margin: 0 auto;">
+            <div class="koszono-cim" style="margin-bottom: 0; text-align: center;">
+                Köszönjük, hogy használta a Pointb Tréning Központ<br>
+                Interaktív Tesztelő Portálját (ITP),<br>
+                és kitöltötte a tesztünket!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+
+        /* Author: Printz Péter | core code by prinyo | URL: https://pprinyo.github.io/itp-portal/ */
+        const ITP_PORTAL_URL = "https://pprinyo.github.io/itp-portal/";
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJEy6ScBJfb7rFUDlc04DlLkLl3gx-TaYk-uSjKg7dyD8AHbfCfv-jy-g8VCPnhQss/exec";
+
+        const __ITP_AUTHOR_SIGNATURE__ = Object.freeze({
+            author: "Printz Péter",
+            signature: "core code by prinyo",
+            system: "Pointb Interaktív Tesztelő Portál (ITP)",
+            version: "v2.15",
+            url: ITP_PORTAL_URL
+        });
+
+        const KUTSZAM_VEZETO = {
+            "1500": "Jójárt Gyöngyi (J.Gy.)",
+            "1501": "Szabó Gábor (S.G.)",
+            "1503": "Katona Péter (K.P.)",
+            "1504": "Szabó Gábor (S.G.)",
+            "1505": "Gerencsér Ramóna (G.R)",
+            "1508": "Végh Krisztina (V.K)",
+            "1509": "Gerencsér Ramóna (G.R)",
+            "1701": "Katona Péter (K.P.)",
+            "1702": "Katona Péter (K.P.)",
+            "1703": "Gerencsér Ramóna (G.R)",
+            "1704": "Gerencsér Ramóna (G.R)",
+            "1705": "Végh Krisztina (V.K)",
+            "1706": "Katona Péter (K.P.)",
+            "1707": "Szarka Gergely (Sz.G.)",
+            "1708": "Szabó Gábor (S.G.)",
+            "1709": "Jójárt Gyöngyi (J.Gy.)",
+            "1710": "Szabó Gábor (S.G.)",
+            "1711": "Katona Péter (K.P.)",
+            "1712": "Gerencsér Ramóna (G.R)",
+            "1713": "Gerencsér Ramóna (G.R)",
+            "1714": "Katona Péter (K.P.)",
+            "1715": "Végh Krisztina (V.K)",
+            "1716": "Végh Krisztina (V.K)",
+            "1717": "Jójárt Gyöngyi (J.Gy.)",
+            "1721": "Jójárt Gyöngyi (J.Gy.)",
+            "1723": "Szabó Gábor (S.G.)",
+            "1724": "Katona Péter (K.P.)",
+            "1725": "Szabó Gábor (S.G.)",
+            "1728": "Jójárt Gyöngyi (J.Gy.)",
+            "1729": "Végh Krisztina (V.K)",
+            "1751": "Gerencsér Ramóna (G.R)",
+            "1752": "Végh Krisztina (V.K)",
+            "1753": "Végh Krisztina (V.K)",
+            "1754": "Gerencsér Ramóna (G.R)",
+            "1756": "Jójárt Gyöngyi (J.Gy.)",
+            "1757": "Végh Krisztina (V.K)",
+            "1770": "Jójárt Gyöngyi (J.Gy.)",
+            "1771": "Végh Krisztina (V.K)",
+            "1772": "Jójárt Gyöngyi (J.Gy.)",
+            "1773": "Jójárt Gyöngyi (J.Gy.)",
+            "1774": "Szabó Gábor (S.G.)",
+            "1775": "Jójárt Gyöngyi (J.Gy.)",
+            "1776": "Gerencsér Ramóna (G.R)",
+            "1779": "Katona Péter (K.P.)",
+            "1781": "Gerencsér Ramóna (G.R)",
+            "1782": "Szabó Gábor (S.G.)",
+            "1786": "Ruzsányi László (R.L.)",
+            "1788": "Szarka Gergely (Sz.G.)",
+            "1793": "Végh Krisztina (V.K)",
+            "1794": "Katona Péter (K.P.)",
+            "1795": "Katona Péter (K.P.)",
+            "1901": "Gerencsér Ramóna (G.R)",
+            "1902": "Jójárt Gyöngyi (J.Gy.)",
+            "1904": "Végh Krisztina (V.K)",
+            "1906": "Végh Krisztina (V.K)",
+            "1907": "Katona Péter (K.P.)",
+            "1909": "Szarka Gergely (Sz.G.)",
+            "1910": "Szabó Gábor (S.G.)",
+            "1911": "Szabó Gábor (S.G.)",
+            "1912": "Katona Péter (K.P.)",
+            "1913": "Jójárt Gyöngyi (J.Gy.)",
+            "1915": "Jójárt Gyöngyi (J.Gy.)",
+            "1916": "Jójárt Gyöngyi (J.Gy.)",
+            "1917": "Szabó Gábor (S.G.)",
+            "1918": "Gerencsér Ramóna (G.R)",
+            "1920": "Szabó Gábor (S.G.)",
+            "1924": "Szarka Gergely (Sz.G.)",
+            "1926": "Gerencsér Ramóna (G.R)",
+            "1929": "Gerencsér Ramóna (G.R)",
+            "1931": "Gerencsér Ramóna (G.R)",
+            "1934": "Szabó Gábor (S.G.)",
+            "1935": "Gerencsér Ramóna (G.R)",
+            "1949": "Ruzsányi László (R.L.)",
+            "1971": "Végh Krisztina (V.K)",
+            "1972": "Szabó Gábor (S.G.)",
+            "1974": "Jójárt Gyöngyi (J.Gy.)",
+            "1975": "Katona Péter (K.P.)",
+            "1976": "Katona Péter (K.P.)",
+            "1978": "Végh Krisztina (V.K)",
+            "1979": "Végh Krisztina (V.K)",
+            "1980": "Végh Krisztina (V.K)",
+            "1981": "Katona Péter (K.P.)",
+            "1982": "Végh Krisztina (V.K)",
+            "1983": "Katona Péter (K.P.)",
+            "1984": "Szabó Gábor (S.G.)",
+            "1986": "Jójárt Gyöngyi (J.Gy.)",
+            "1988": "Végh Krisztina (V.K)",
+            "1989": "Katona Péter (K.P.)",
+            "1990": "Végh Krisztina (V.K)",
+            "1991": "Szabó Gábor (S.G.)",
+            "1992": "Szarka Gergely (Sz.G.)",
+            "1994": "Szarka Gergely (Sz.G.)",
+            "1995": "Gerencsér Ramóna (G.R)",
+            "1996": "Gerencsér Ramóna (G.R)",
+            "1998": "Gerencsér Ramóna (G.R)",
+            "1999": "Katona Péter (K.P.)",
+            "2003": "Jójárt Gyöngyi (J.Gy.)",
+            "2020": "Gerencsér Ramóna (G.R)",
+            "2021": "Végh Krisztina (V.K)",
+            "2023": "Szabó Gábor (S.G.)",
+            "2024": "Katona Péter (K.P.)",
+            "2026": "Ruzsányi László (R.L.)",
+            "2027": "Ruzsányi László (R.L.)",
+            "2028": "Szabó Gábor (S.G.)",
+            "2030": "Szabó Gábor (S.G.)",
+            "2032": "Végh Krisztina (V.K)",
+            "2033": "Jójárt Gyöngyi (J.Gy.)",
+            "2034": "Jójárt Gyöngyi (J.Gy.)",
+            "2036": "Katona Péter (K.P.)",
+            "2037": "Gerencsér Ramóna (G.R)",
+            "2039": "Jójárt Gyöngyi (J.Gy.)",
+            "2040": "Végh Krisztina (V.K)",
+            "2041": "Gerencsér Ramóna (G.R)",
+            "2042": "Szarka Gergely (Sz.G.)",
+            "2046": "Jójárt Gyöngyi (J.Gy.)",
+            "2047": "Szarka Gergely (Sz.G.)",
+            "2048": "Katona Péter (K.P.)",
+            "2049": "Szarka Gergely (Sz.G.)",
+            "2050": "Végh Krisztina (V.K)",
+            "2051": "Szabó Gábor (S.G.)",
+            "2053": "Katona Péter (K.P.)",
+            "2055": "Jójárt Gyöngyi (J.Gy.)",
+            "2056": "Végh Krisztina (V.K)",
+            "2060": "Szabó Gábor (S.G.)",
+            "2061": "Szabó Gábor (S.G.)",
+            "2062": "Szabó Gábor (S.G.)",
+            "2063": "Gerencsér Ramóna (G.R)",
+            "2064": "Katona Péter (K.P.)",
+            "2065": "Jójárt Gyöngyi (J.Gy.)",
+            "2066": "Jójárt Gyöngyi (J.Gy.)",
+            "2067": "Katona Péter (K.P.)",
+            "2069": "Katona Péter (K.P.)",
+            "2070": "Gerencsér Ramóna (G.R)",
+            "2071": "Végh Krisztina (V.K)",
+            "2072": "Végh Krisztina (V.K)",
+            "2073": "Szabó Gábor (S.G.)",
+            "2074": "Szabó Gábor (S.G.)",
+            "2075": "Végh Krisztina (V.K)",
+            "2077": "Jójárt Gyöngyi (J.Gy.)",
+            "2078": "Szarka Gergely (Sz.G.)",
+            "2079": "Végh Krisztina (V.K)",
+            "2080": "Végh Krisztina (V.K)",
+            "2081": "Szabó Gábor (S.G.)",
+            "2082": "Katona Péter (K.P.)",
+            "2085": "Jójárt Gyöngyi (J.Gy.)",
+            "2086": "Gerencsér Ramóna (G.R)",
+            "2087": "Gerencsér Ramóna (G.R)",
+            "2090": "Gerencsér Ramóna (G.R)",
+            "2095": "Szarka Gergely (Sz.G.)",
+            "2096": "Szarka Gergely (Sz.G.)",
+            "2097": "Jójárt Gyöngyi (J.Gy.)",
+            "2098": "Katona Péter (K.P.)",
+            "2100": "Ruzsányi László (R.L.)",
+            "2103": "Szarka Gergely (Sz.G.)",
+            "2104": "Jójárt Gyöngyi (J.Gy.)",
+            "2105": "Jójárt Gyöngyi (J.Gy.)",
+            "2107": "Szabó Gábor (S.G.)",
+            "2108": "Szabó Gábor (S.G.)",
+            "2111": "Szarka Gergely (Sz.G.)",
+            "2112": "Szarka Gergely (Sz.G.)",
+            "2116": "Katona Péter (K.P.)",
+            "2117": "Jójárt Gyöngyi (J.Gy.)",
+            "2119": "Ruzsányi László (R.L.)",
+            "2120": "Ruzsányi László (R.L.)",
+            "2121": "Ruzsányi László (R.L.)",
+            "2122": "Ruzsányi László (R.L.)",
+            "2123": "Ruzsányi László (R.L.)",
+            "2125": "Ruzsányi László (R.L.)",
+            "2126": "Ruzsányi László (R.L.)",
+            "2127": "Ruzsányi László (R.L.)",
+            "2128": "Ruzsányi László (R.L.)",
+            "2129": "Ruzsányi László (R.L.)",
+            "2130": "Ruzsányi László (R.L.)",
+            "2131": "Ruzsányi László (R.L.)",
+            "2132": "Ruzsányi László (R.L.)",
+            "2133": "Ruzsányi László (R.L.)",
+            "2134": "Ruzsányi László (R.L.)",
+            "2135": "Ruzsányi László (R.L.)",
+            "2136": "Ruzsányi László (R.L.)",
+            "2137": "Ruzsányi László (R.L.)",
+            "2138": "Ruzsányi László (R.L.)",
+            "2139": "Ruzsányi László (R.L.)",
+            "2140": "Ruzsányi László (R.L.)",
+            "2141": "Ruzsányi László (R.L.)",
+            "2142": "Ruzsányi László (R.L.)",
+            "2143": "Ruzsányi László (R.L.)",
+            "2144": "Ruzsányi László (R.L.)",
+            "2145": "Ruzsányi László (R.L.)",
+            "2146": "Ruzsányi László (R.L.)",
+            "2147": "Ruzsányi László (R.L.)",
+            "2148": "Ruzsányi László (R.L.)",
+            "2149": "Ruzsányi László (R.L.)",
+            "2150": "Ruzsányi László (R.L.)",
+            "2151": "Gerencsér Ramóna (G.R)",
+            "2152": "Katona Péter (K.P.)",
+            "2153": "Katona Péter (K.P.)",
+            "2154": "Szabó Gábor (S.G.)",
+            "2155": "Szarka Gergely (Sz.G.)",
+            "2156": "Szabó Gábor (S.G.)",
+            "2301": "Ruzsányi László (R.L.)",
+            "2302": "Ruzsányi László (R.L.)",
+            "2303": "Ruzsányi László (R.L.)",
+            "8101": "Gerencsér Ramóna (G.R)",
+            "9101": "Kispál Dénes (K.D.)",
+            "9102": "Kispál Dénes (K.D.)",
+            "9103": "Kispál Dénes (K.D.)",
+            "9104": "Kispál Dénes (K.D.)",
+            "9105": "Kispál Dénes (K.D.)"
+};
+
+        const KUTSZAM_ALLOMAS = {
+    "1500": "Üllő",
+    "1501": "Ózd",
+    "1503": "Nagykőrös",
+    "1504": "Sátoraljaújhely",
+    "1505": "Keszthely",
+    "1508": "Tata",
+    "1509": "Jánossomorja",
+    "1701": "Bp Váci út 16.",
+    "1702": "Bp Nagykőrösi út",
+    "1703": "Nagykanizsa Hevesi S. u.",
+    "1704": "Balatonlelle",
+    "1705": "Zsámbék",
+    "1706": "Szentendre",
+    "1707": "Siófok",
+    "1708": "Miskolc Búza tér",
+    "1709": "Bp BAH Csomópont",
+    "1710": "Eger Mátyás Király út",
+    "1711": "Vác",
+    "1712": "Veszprém Budapesti út",
+    "1713": "Szombathely Körmendi út",
+    "1714": "Bp Üllői út 137.",
+    "1715": "Bp Népliget",
+    "1716": "Bp Keresztúri út",
+    "1717": "Bp Fehérvári út",
+    "1721": "Bp Budafoki út",
+    "1723": "Bp Tengerszem u.",
+    "1724": "Debrecen István út",
+    "1725": "Nyíregyháza Debreceni út",
+    "1728": "Bp II. Rákóczi F. út",
+    "1729": "Bp Mester u.",
+    "1751": "Mosonmagyaróvár 1-es út",
+    "1752": "M1 Óbarok Jobb",
+    "1753": "M1 Óbarok bal",
+    "1754": "Kőszeg",
+    "1756": "Békéscsaba Jókai u.",
+    "1757": "Üröm",
+    "1770": "Bp Pesti út",
+    "1771": "Győr Pápai út",
+    "1772": "Bp Budaörsi út",
+    "1773": "M0 Szigetszentmiklós",
+    "1774": "Bp Hungária Krt. 175.",
+    "1775": "Szeged Dorozsmai út",
+    "1776": "Sopron Csengery u.",
+    "1779": "Bp Gyáli út",
+    "1781": "Kapuvár",
+    "1782": "Bp Széchenyi tér",
+    "1786": "Balatonfűzfő",
+    "1788": "Dunaújváros Dózsa Gy. út",
+    "1793": "Bp Hűvösvölgyi út",
+    "1794": "Debrecen Füredi út",
+    "1795": "Szolnok Dráva u.",
+    "1901": "Ajka",
+    "1902": "Békés",
+    "1904": "Bp Teleki tér",
+    "1906": "Bp Királyok útja",
+    "1907": "Bp Üllői út 110.",
+    "1909": "Dunaújváros Aranyvölgyi út",
+    "1910": "Fót",
+    "1911": "Hajdúnánás",
+    "1912": "Hajdúszoboszló",
+    "1913": "Hódmezővásárhely",
+    "1915": "Kiskőrös",
+    "1916": "Maglód",
+    "1917": "Miskolc Kilián ltp.",
+    "1918": "Mosonmagyaróvár Kossuth u.",
+    "1920": "Nyékládháza",
+    "1924": "Sárbogárd",
+    "1926": "Székesfehérvár Donát u.",
+    "1929": "Veszprém Körgyűrű",
+    "1931": "Zalaszentgrót",
+    "1934": "Salgótarján",
+    "1935": "Zalaegerszeg",
+    "1949": "Dorog",
+    "1971": "M1 Bábolna jobb",
+    "1972": "Bp Csömöri út",
+    "1974": "Bp Haladás u.",
+    "1975": "Bp Maglódi út",
+    "1976": "Bp Irinyi u.",
+    "1978": "Bp Határ út",
+    "1979": "Bp Szentendrei út",
+    "1980": "Bp Szilágyi E. fasor",
+    "1981": "Bp Váci út 77.",
+    "1982": "Bp Szabadföld út",
+    "1983": "Bp Baross u.",
+    "1984": "Bp Alkotmány út",
+    "1986": "Dunaharaszti",
+    "1988": "M1 Arrabona bal",
+    "1989": "Kecskemét Budai út",
+    "1990": "Komárom",
+    "1991": "Nyíregyháza Tiszavasvári út",
+    "1992": "Pécs Zsolnay út",
+    "1994": "Székesfehérvár Balatoni út",
+    "1995": "Székesfehérvár Budai út",
+    "1996": "Szombathely Rumi út",
+    "1998": "Veszprém Aradi Vértanúk útja",
+    "1999": "Bp Feketesas u.",
+    "2003": "Bp Alacskai út",
+    "2020": "Körmend",
+    "2021": "Kisbér",
+    "2023": "Nyíregyháza Kert u.",
+    "2024": "Szolnok Thököly út",
+    "2026": "Érd jobb",
+    "2027": "Érd bal",
+    "2028": "Miskolc Soltész N. K. u.",
+    "2030": "Miskolc Testvérvárosok útja",
+    "2032": "Tatabánya",
+    "2033": "Békéscsaba Szarvasi út",
+    "2034": "Szeged Makkosházi krt.",
+    "2036": "Bp Védgát u.",
+    "2037": "Hegyfalu",
+    "2039": "Alsónémedi",
+    "2040": "Győr Ipar u.",
+    "2041": "Nagykanizsa Virág B. u.",
+    "2042": "Szekszárd",
+    "2046": "Kalocsa",
+    "2047": "Paks",
+    "2048": "Bp Magyar u.",
+    "2049": "Pécs Siklósi út",
+    "2050": "Bp Péterhegyi út",
+    "2051": "Eger Sas u. - Mátyás Király út",
+    "2053": "Bp Váci út 93.",
+    "2055": "Bp Ártér u.",
+    "2056": "M1 Bábolna bal",
+    "2060": "Bp Szentmihályi út",
+    "2061": "M3 Karácsond jobb",
+    "2062": "M3 Karácsond bal",
+    "2063": "Székesfehérvár Lövölde út",
+    "2064": "Kecskemét Dunaföldvári  út",
+    "2065": "M5 Inárcs jobb",
+    "2066": "M5 Inárcs bal",
+    "2067": "Debrecen Kassai út",
+    "2069": "Szentes",
+    "2070": "Sopron Lackner K. u.",
+    "2071": "M0 Törökbálint",
+    "2072": "Bp M1/M7",
+    "2073": "Bp Róbert Károly krt.",
+    "2074": "Bp Hungária krt. 116.",
+    "2075": "Bp Fogarasi út",
+    "2077": "Makó",
+    "2078": "Kaposvár Áchim u.",
+    "2079": "Győr Szt. István út",
+    "2080": "Bp Kerepesi út",
+    "2081": "Bp Kacsóh P. út",
+    "2082": "Bp Kőrösi Cs. út",
+    "2085": "Bp Haraszti út",
+    "2086": "M7 Kajászó jobb",
+    "2087": "M7 Kajászó bal",
+    "2090": "Szombathely Csaba u.",
+    "2095": "M6 Dunaújváros bal",
+    "2096": "M6 Dunaújváros jobb",
+    "2097": "Vecsés",
+    "2098": "Rétság",
+    "2100": "Gyomaendrőd",
+    "2103": "Kaposvár Füredi út",
+    "2104": "M5 Röszke jobb",
+    "2105": "M5 Röszke bal",
+    "2107": "Bag",
+    "2108": "Kistarcsa",
+    "2111": "M6 Geresd jobb",
+    "2112": "M6 Geresd bal",
+    "2116": "Esztergom",
+    "2117": "Szigetszentmiklós, Gyári út",
+    "2119": "Kistelek",
+    "2120": "Albertirsa",
+    "2121": "Kiskunfélegyháza",
+    "2122": "Cegléd",
+    "2123": "Biatorbágy",
+    "2125": "Nagyatád",
+    "2126": "Nagykanizsa Teleki u.",
+    "2127": "Nagykanizsa Csengery u.",
+    "2128": "Csurgó",
+    "2129": "Barcs",
+    "2130": "Nagybajom",
+    "2131": "Zalaegerszeg Hock J. u.",
+    "2132": "Marcali",
+    "2133": "Cece",
+    "2134": "Dunaföldvár",
+    "2135": "Csongrád",
+    "2136": "Nagyréde",
+    "2137": "Kecskemét-Katonatelep",
+    "2138": "Bak",
+    "2139": "Mindszent",
+    "2140": "Lenti",
+    "2141": "Dömsöd",
+    "2142": "Csákvár",
+    "2143": "Túrkeve",
+    "2144": "Tompa",
+    "2145": "Szolnok-Szandaszőlős",
+    "2146": "Érd Bajcsy-Zsilinszky út",
+    "2147": "Szeged Uszoda u.",
+    "2148": "Balassagyarmat",
+    "2149": "Bp Cinkotai út",
+    "2150": "Zalalövő",
+    "2151": "Révfülöp",
+    "2152": "Törökszentmiklós",
+    "2153": "Dunabogdány",
+    "2154": "Mátészalka",
+    "2155": "Kápolnásnyék",
+    "2156": "Szirmabesenyő",
+    "2301": "Veresegyház",
+    "2302": "Atkár",
+    "2303": "Bögöte",
+    "8101": "CRT Hegyeshalom",
+    "9101": "ALDI Sopron Győri út",
+    "9102": "ALDI Szigetszentmiklós Csepeli út",
+    "9103": "ALDI Budaörs",
+    "9104": "ALDI Pápa",
+    "9105": "ALDI Baja"
+};
+
+        const negyedevesKerdesSzuvereniTxt = `### Kérdés 1
+Fogalmazz meg egy ajánlást a Costa Rica kávéra!
+- Helyes válasz: 100%Arabica csokoládés kávét ajánlok
+- Pontszám: 1
+
+### Kérdés 2
+Milyen ízjegyekkel rendelkezik a Costa Rica kávénk?
+- Választási lehetőségek:
+  * A) Csokoládés ízjegyek, krémes, karakteres
+  * B) Citrusos
+  * C) Mézes
+- Helyes válasz: A
+- Pontszám: 1
+
+### Kérdés 3
+Kinek ajánljuk az új Costa Rica kávét?
+- Választási lehetőségek:
+  * A) Minden betérő vásárlónak
+  * B) Tankoló vevőknek
+  * C) Akik kérnek egy presszót
+- Helyes válasz: A
+- Pontszám: 1
+
+### Kérdés 4
+Hogy ajánlod a Marketing akciót az applikációval rendelkezőknek?
+- Választási lehetőségek:
+  * A) Érdemes gyűjteni a matricákat, mert spórolhat
+  * B) Nem ajánlom, mert az akció részvételi szabályzata az OMV honlapon is olvató
+  * C) Matricagyűjtés nélkül azonnal meg tudja vásárolni kedvezményesen a termékeket.
+- Helyes válasz: C
+- Pontszám: 1
+
+### Kérdés 5
+Tűz esetén mi a helyes intézkedési sorrend?
+- Választási lehetőségek:
+  * A) Vészkapcsoló használata, tűz oltása, tűzoltóság értesítése
+  * B) Vészkapcsoló használata, tűzoltóság értesítése, tűz oltása
+  * C) Tűz oltása, vészkapcsoló használata, tűzoltóság értesítése
+- Helyes válasz: B
+- Pontszám: 1
+
+### Kérdés 6
+Személyi sérüléssel járó baleset esetén kit értesítünk? (idős ember elesett)
+- Választási lehetőségek:
+  * A) Mentőket, állomásvezetőt
+  * B) Mentőket, állomásvezetőt, területi vezetőt
+  * C) Állomásvezetőt elég
+- Helyes válasz: B
+- Pontszám: 1
+
+### Kérdés 7
+Milyen mértékben nyújtunk segítséget baleset esetén?
+- Választási lehetőségek:
+  * A) Elég ha a helyszint biztosítjuk
+  * B) Bátorságunktól függ
+  * C) Amilyen mértékben ki vagyunk képezve
+- Helyes válasz: C
+- Pontszám: 1
+
+### Kérdés 8
+Miért ajánljuk télen a MaxxMotion Diesel üzemanyagunkat? (több jó válasz)
+- Választási lehetőségek:
+  * A) Ausztriából érkezik.
+  * B) Nagy hidegben is biztonságosan eléri az uticélját
+  * C) A dermedéspontja -40 fok.
+- Helyes válasz: B C
+- Pontszám: 1
+
+### Kérdés 9
+Mit jelent a cetánszám?
+- Választási lehetőségek:
+  * A) Gázolaj oktánszámát
+  * B) Gázolaj lobbanáspontját, öngyulladási hajlamát
+  * C) Benzin kompressziótűrési viszonyszámát
+- Helyes válasz: B
+- Pontszám: 1
+
+### Kérdés 10
+Mennyi a MaxxMotion diesel cetánszáma?
+- Választási lehetőségek:
+  * A) Legalább 100
+  * B) Legalább 95
+  * C) Legalább 55
+- Helyes válasz: C
+- Pontszám: 1`;
+
+        const state = {
+            kerdesLista: [],
+            aktivKerdesLista: [],
+            aktualisKerdesIndex: 0,
+            rogzitettValaszok: [],
+            utolsoEredmeny: null,
+            tesztTimer: null,
+            attekintesTimer: null,
+            kezdesIdo: null,
+            idotullepes: false
+        };
+
+        function lejatszoKattintasHang() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === "suspended") ctx.resume();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch (_) {}
+        }
+
+        function szovegNormalizalasa(str) {
+            if (!str) return "";
+            return str
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]/g, "");
+        }
+
+        function ekezetetTelenit(str) {
+            if (!str) return "";
+            const map = {
+                "á": "a", "Á": "A", "é": "e", "É": "E", "í": "i", "Í": "I",
+                "ó": "o", "Ó": "O", "ö": "o", "Ö": "O", "ő": "o", "Ő": "O",
+                "ú": "u", "Ú": "U", "ü": "u", "Ü": "U", "ű": "u", "Ű": "U"
+            };
+            return String(str).replace(/[áÁéÉíÍóÓöÖőŐúÚüÜűŰ]/g, ch => map[ch] || ch);
+        }
+
+        function mutatUzenetet(szoveg, tipus) {
+            const box = document.getElementById("uzenetContainer");
+            if (!box) return;
+            box.textContent = szoveg;
+            box.className = tipus || "info";
+            box.style.display = szoveg ? "block" : "none";
+        }
+
+        function frissitAllomasEsVezeto() {
+            const kutElem = document.getElementById("kutSzam");
+            const allomasElem = document.getElementById("toltoallomasNev");
+            const vezetoElem = document.getElementById("teruletiVezeto");
+            if (!kutElem || !allomasElem || !vezetoElem) return;
+
+            kutElem.value = kutElem.value.replace(/[^0-9]/g, "").slice(0, 4);
+            const kod = kutElem.value;
+
+            if (kod.length === 4 && kod !== "0000") {
+                allomasElem.value = KUTSZAM_ALLOMAS[kod] || "";
+                vezetoElem.value = KUTSZAM_VEZETO[kod] || "";
+            } else {
+                allomasElem.value = "";
+                vezetoElem.value = "";
+            }
+        }
+
+        function rugalmasTxtFeldolgozo(szoveg) {
+            const sorok = szoveg.split(/\r?\n/).map(s => s.trim());
+            const eredmeny = [];
+
+            let aktualisKerdes = null;
+            let aktualisOpciok = [];
+            let helyesValaszok = [];
+            let osszesPont = 1;
+            let tipus = "feleletvalasztos";
+            let szovegMinta = "";
+            let helyesMdbOlvasasa = false;
+
+            const lezarKerdest = () => {
+                if (!aktualisKerdes) return;
+                if (aktualisOpciok.length === 0) tipus = "szoveges";
+                eredmeny.push({
+                    kerdes: aktualisKerdes,
+                    tipus,
+                    szovegMinta,
+                    opciok: [...aktualisOpciok],
+                    helyesValaszok: [...helyesValaszok],
+                    osszesPont
+                });
+                aktualisKerdes = null;
+                aktualisOpciok = [];
+                helyesValaszok = [];
+                osszesPont = 1;
+                tipus = "feleletvalasztos";
+                szovegMinta = "";
+                helyesMdbOlvasasa = false;
+            };
+
+            for (const sor of sorok) {
+                if (sor === "") {
+                    lezarKerdest();
+                    continue;
+                }
+
+                const tiszta = sor.replace(/^[*\-\s]+/, "").toLowerCase();
+                if (sor.startsWith("###") || sor === "---" || tiszta.includes("választási lehetőségek")) {
+                    continue;
+                }
+
+                if (tiszta.startsWith("helyes") || tiszta.startsWith("megoldás")) {
+                    helyesMdbOlvasasa = true;
+                    const utan = sor.replace(/^[*\-\s]*(helyes válasz|megoldás)[:\s]*/i, "").trim();
+                    if (utan) {
+                        if (tipus === "szoveges" || aktualisOpciok.length === 0) {
+                            helyesValaszok = utan.split(/\/|,/).map(v => v.trim()).filter(Boolean);
+                        } else {
+                            const betuk = utan.match(/[a-zA-Z]/g);
+                            if (betuk) helyesValaszok = betuk.map(b => b.toUpperCase());
+                        }
+                    }
+                    continue;
+                }
+
+                if (tiszta.startsWith("pontszám") || tiszta.startsWith("pont")) {
+                    helyesMdbOlvasasa = false;
+                    const m = sor.match(/\d+/);
+                    if (m) osszesPont = parseInt(m[0], 10);
+                    continue;
+                }
+
+                if (helyesMdbOlvasasa && tipus === "feleletvalasztos" && aktualisOpciok.length > 0) {
+                    if (sor.length === 1 && /^[a-zA-Z]$/.test(sor)) {
+                        helyesValaszok.push(sor.toUpperCase());
+                        continue;
+                    } else if (sor.length > 1 && !tiszta.startsWith("pont") && !tiszta.startsWith("a)") && !tiszta.startsWith("b)")) {
+                        helyesMdbOlvasasa = false;
+                    }
+                } else if (helyesMdbOlvasasa) {
+                    if (!tiszta.startsWith("pont")) {
+                        helyesValaszok.push(sor.replace(/^[*\-\s]+/, ""));
+                        continue;
+                    }
+                }
+
+                if (!aktualisKerdes) {
+                    aktualisKerdes = sor;
+                    if (
+                        sor.includes(".....") ||
+                        tiszta.includes("fejezd be") ||
+                        tiszta.includes("egészítsd ki") ||
+                        tiszta.includes("írd be a mondatba") ||
+                        tiszta.includes("kezd el a mondatot") ||
+                        tiszta.includes("pótold a hiányzó")
+                    ) {
+                        tipus = "szoveges";
+                    }
+                } else {
+                    const valaszMinta = /^[a-eA-E][\)\.]/.test(tiszta) || /^[*\-\s]+[a-eA-E][\)\.]/.test(sor);
+                    if (tipus === "szoveges" && !valaszMinta && !helyesMdbOlvasasa) {
+                        const resz = sor.replace(/^[*\-\s]+/, "");
+                        szovegMinta = szovegMinta ? (szovegMinta + " " + resz) : resz;
+                    } else if (!valaszMinta && !helyesMdbOlvasasa && (
+                        sor.includes(".....") ||
+                        tiszta.includes("fejezd be") ||
+                        tiszta.includes("egészítsd ki") ||
+                        tiszta.includes("írd be") ||
+                        tiszta.includes("pótold")
+                    )) {
+                        tipus = "szoveges";
+                        szovegMinta = sor.replace(/^[*\-\s]+/, "");
+                    } else if (!valaszMinta && !helyesMdbOlvasasa && tipus === "szoveges") {
+                        szovegMinta = sor.replace(/^[*\-\s]+/, "");
+                    } else if (!helyesMdbOlvasasa) {
+                        aktualisOpciok.push(sor);
+                    }
+                }
+            }
+
+            lezarKerdest();
+            return eredmeny;
+        }
+
+        function valasztoValtas() {
+            const kivalasztott = document.querySelector('input[name="kerdessorValaszto"]:checked');
+            const valasztas = kivalasztott ? kivalasztott.value : "negyedeves";
+            const fajlCsoport = document.getElementById("fajlBeolvasoCsoport");
+            const gomb = document.getElementById("inditoGomb");
+
+            if (valasztas === "negyedeves") {
+                fajlCsoport.style.display = "none";
+                state.kerdesLista = rugalmasTxtFeldolgozo(negyedevesKerdesSzuvereniTxt);
+                gomb.disabled = false;
+                mutatUzenetet(`✅ Az Aktuális negyedéves kérdéssor készen áll (${state.kerdesLista.length} db kérdés). Kattints a Teszt indítására!`, "siker");
+            } else {
+                fajlCsoport.style.display = "block";
+                const fajlInput = document.getElementById("fajlBeolvaso");
+                if (!fajlInput || fajlInput.files.length === 0) {
+                    gomb.disabled = true;
+                    mutatUzenetet("ℹ️ Kérlek, tallózd be a saját TXT fájlodat a teszt indításához!", "info");
+                }
+            }
+        }
+
+        function inditTesztIdozitot(masodperc) {
+            const sav = document.getElementById("visszaszamlaloSáv");
+            const timerSpan = document.getElementById("visszaszamlaloTimer");
+            if (sav) sav.style.display = "block";
+
+            let hatralevo = masodperc;
+            if (state.tesztTimer) clearInterval(state.tesztTimer);
+
+            state.tesztTimer = setInterval(() => {
+                const p = Math.floor(hatralevo / 60);
+                const mp = hatralevo % 60;
+                if (timerSpan) {
+                    timerSpan.textContent = `${String(p).padStart(2, "0")}:${String(mp).padStart(2, "0")}`;
+                }
+                if (hatralevo <= 0) {
+                    clearInterval(state.tesztTimer);
+                    state.tesztTimer = null;
+                    if (sav) sav.style.display = "none";
+                    state.idotullepes = true;
+                    alert("⏰ Letelt a 15 perces időkeret! A teszt automatikusan kiértékelésre kerül.");
+                    while (state.rogzitettValaszok.length < state.aktivKerdesLista.length) {
+                        state.rogzitettValaszok.push({
+                            kerdesIndex: state.rogzitettValaszok.length,
+                            valaszok: [""]
+                        });
+                    }
+                    kiertekelTesztet();
+                    return;
+                }
+                hatralevo--;
+            }, 1000);
+        }
+
+        function inditAttekintesIdozitot(masodperc) {
+            const timerSpan = document.getElementById("attekintesTimer");
+            let hatralevo = masodperc;
+            if (state.attekintesTimer) clearInterval(state.attekintesTimer);
+
+            state.attekintesTimer = setInterval(() => {
+                hatralevo--;
+                if (hatralevo < 0) {
+                    clearInterval(state.attekintesTimer);
+                    state.attekintesTimer = null;
+                    tesztVeglegesLezarasa();
+                    return;
+                }
+                const p = Math.floor(hatralevo / 60);
+                const mp = hatralevo % 60;
+                if (timerSpan) {
+                    timerSpan.textContent = `${String(p).padStart(2, "0")}:${String(mp).padStart(2, "0")}`;
+                }
+            }, 1000);
+        }
+
+        function tesztVeglegesLezarasa() {
+            if (state.attekintesTimer) {
+                clearInterval(state.attekintesTimer);
+                state.attekintesTimer = null;
+            }
+            lejatszoKattintasHang();
+            const fo = document.querySelector(".fo-kontener");
+            const lab = document.querySelector(".oldal-lablice");
+            const zaro = document.getElementById("koszonoZaroKepernyo");
+            if (fo) fo.style.display = "none";
+            if (lab) lab.style.display = "none";
+            if (zaro) zaro.style.display = "flex";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function megjelenitKovetkezoKerdest() {
+            const kontener = document.getElementById("kerdesekKontener");
+            if (!kontener) return;
+
+            if (state.aktualisKerdesIndex >= state.aktivKerdesLista.length) {
+                kiertekelTesztet();
+                return;
+            }
+
+            const kObj = state.aktivKerdesLista[state.aktualisKerdesIndex];
+            mutatUzenetet(`🎯 Kérdés ${state.aktualisKerdesIndex + 1} / ${state.aktivKerdesLista.length}`, "info");
+
+            let html = `<div class="kerdes-doboz"><p>${state.aktualisKerdesIndex + 1}. ${kObj.kerdes}</p>`;
+
+            if (kObj.tipus === "szoveges") {
+                const minta = kObj.szovegMinta || "";
+                const darabok = minta.split(".....");
+                if (darabok.length > 1) {
+                    html += `<div class="szoveges-input-kontener">
+                        <span>${darabok[0]}</span>
+                        <input type="text" class="szoveges-input" id="aktualisSzovegesValasz" placeholder="Ide írd a választ..." autocomplete="off">
+                        <span>${darabok[1] || ""}</span>
+                    </div>`;
+                } else {
+                    html += `<div class="szoveges-input-kontener">
+                        <input type="text" class="szoveges-input" id="aktualisSzovegesValasz" placeholder="Ide írd a választ..." autocomplete="off">
+                        <span>${minta}</span>
+                    </div>`;
+                }
+            } else if (kObj.opciok && kObj.opciok.length > 0) {
+                const inputTipus = kObj.helyesValaszok.length > 1 ? "checkbox" : "radio";
+                kObj.opciok.forEach((opcio, idx) => {
+                    html += `<label class="valasz-opcio">
+                        <input type="${inputTipus}" name="aktiv_valasz" value="${idx + 1}"> <span>${opcio}</span>
+                    </label>`;
+                });
+            }
+
+            html += `</div>`;
+            const gombFelirat = (state.aktualisKerdesIndex === state.aktivKerdesLista.length - 1)
+                ? "✔ Válasz rögzítése és Teszt befejezése"
+                : "➡️ Következő kérdés (Nem módosítható!)";
+            html += `<button type="button" id="valaszRogzitoGomb" class="FoGomb">${gombFelirat}</button>`;
+
+            kontener.innerHTML = html;
+
+            const rogzitoGomb = document.getElementById("valaszRogzitoGomb");
+            if (rogzitoGomb) {
+                let utolsoKatt = 0;
+                const kezelo = (e) => {
+                    const most = Date.now();
+                    if (most - utolsoKatt < 400) return;
+                    utolsoKatt = most;
+                    if (e && e.cancelable) e.preventDefault();
+                    lejatszoKattintasHang();
+                    if (document.activeElement && typeof document.activeElement.blur === "function") {
+                        document.activeElement.blur();
+                    }
+                    rogzitValasztEsTovabb();
+                };
+                rogzitoGomb.addEventListener("touchend", kezelo, { passive: false });
+                rogzitoGomb.addEventListener("click", kezelo);
+            }
+
+            setTimeout(() => {
+                const inp = document.getElementById("aktualisSzovegesValasz");
+                if (inp) inp.focus();
+            }, 80);
+        }
+
+        function rogzitValasztEsTovabb() {
+            const kObj = state.aktivKerdesLista[state.aktualisKerdesIndex];
+            const valaszok = [];
+
+            if (kObj.tipus === "szoveges") {
+                const inp = document.getElementById("aktualisSzovegesValasz");
+                valaszok.push(inp ? inp.value.trim() : "");
+            } else {
+                const kijeloltek = document.querySelectorAll('input[name="aktiv_valasz"]:checked');
+                if (kijeloltek.length === 0) {
+                    mutatUzenetet("⚠️ Kérlek, válassz ki egy opciót a továbblépéshez!", "hiba");
+                    return;
+                }
+                kijeloltek.forEach(el => {
+                    valaszok.push(String.fromCharCode(64 + parseInt(el.value, 10)));
+                });
+            }
+
+            state.rogzitettValaszok.push({
+                kerdesIndex: state.aktualisKerdesIndex,
+                valaszok
+            });
+
+            state.aktualisKerdesIndex++;
+            megjelenitKovetkezoKerdest();
+        }
+
+        function kiertekelTesztet() {
+            try {
+                if (state.tesztTimer) {
+                    clearInterval(state.tesztTimer);
+                    state.tesztTimer = null;
+                }
+                const sav = document.getElementById("visszaszamlaloSáv");
+                if (sav) sav.style.display = "none";
+
+                let idoMegjegyzes = "00:00 perc";
+                if (state.kezdesIdo) {
+                    const eltelt = Math.max(0, Math.floor((Date.now() - state.kezdesIdo) / 1000));
+                    if (state.idotullepes || eltelt >= 900) {
+                        idoMegjegyzes = "15 perc (Időtúllépés miatt letiltva)";
+                    } else {
+                        const p = Math.floor(eltelt / 60);
+                        const mp = eltelt % 60;
+                        idoMegjegyzes = `${String(p).padStart(2, "0")}:${String(mp).padStart(2, "0")} perc`;
+                    }
+                }
+
+                const trener = document.getElementById("trenerNev").value.trim();
+                const nev = document.getElementById("vizsgazoNev").value.trim();
+                const kut = document.getElementById("kutSzam").value.trim();
+                const allomas = document.getElementById("toltoallomasNev").value.trim() || (KUTSZAM_ALLOMAS[kut] || "");
+                const vezeto = document.getElementById("teruletiVezeto").value.trim() || (KUTSZAM_VEZETO[kut] || "");
+
+                let szerzett = 0;
+                let osszes = 0;
+                const lista = [];
+
+                let statHtml = `<div class="statisztika-doboz">
+                    <h3>📊 Részletes Statisztika és Válaszelemzés</h3>
+                    <p><strong>A tréner neve:</strong> ${trener}</p>
+                    <p><strong>Vizsgázó választott neve:</strong> ${nev}</p>
+                    <p><strong>Kútszám:</strong> ${kut}</p>
+                    <p><strong>Töltőállomás neve:</strong> ${allomas}</p>
+                    <p><strong>Területi vezető:</strong> ${vezeto}</p>
+                    <p><strong>Idő felhasználása:</strong> ${idoMegjegyzes}</p>
+                    <ul class="statisztika-lista">`;
+
+                state.aktivKerdesLista.forEach((kObj, idx) => {
+                    osszes += kObj.osszesPont;
+                    const rogz = state.rogzitettValaszok.find(r => r.kerdesIndex === idx);
+                    const valaszok = rogz ? rogz.valaszok : [];
+
+                    let siker = false;
+                    let reszletHtml = "";
+                    const reszletSiman = [];
+
+                    if (kObj.tipus === "szoveges") {
+                        const beirt = valaszok[0] || "";
+                        const norm = szovegNormalizalasa(beirt);
+
+                        if (idx === 0) {
+                            const has100Arabica = norm.includes("100") && (norm.includes("arabika") || norm.includes("arabica"));
+                            const hasCsokis = norm.includes("csoki") || norm.includes("csokolad");
+                            siker = (has100Arabica || hasCsokis) && norm.length > 0;
+                        } else {
+                            siker = norm.length > 0 && kObj.helyesValaszok.some(h => szovegNormalizalasa(h) === norm);
+                        }
+
+                        const elvartStr = kObj.helyesValaszok.join(" / ");
+                        if (siker) {
+                            szerzett += kObj.osszesPont;
+                            reszletHtml = `<div class="opcio-reszlet opcio-jo-helyes">
+                                <span>✍️ Beírt válasz: <em>${beirt}</em></span>
+                                <span>✅ Helyes (+${kObj.osszesPont} pont)</span>
+                            </div>`;
+                            reszletSiman.push(`Beirt valasz: ${beirt} (HELYES)`);
+                        } else {
+                            reszletHtml = `<div class="opcio-reszlet opcio-rossz-bejelolt">
+                                <span>✍️ Beírt válasz: <em>${beirt || "Nem adott meg választ"}</em></span>
+                                <span>❌ Hibás</span>
+                            </div>
+                            <div class="opcio-reszlet opcio-jo-helyes">
+                                <span>💡 Helyes válasz lett volna: <em>${elvartStr}</em></span>
+                                <span>✅ Elvárt</span>
+                            </div>`;
+                            reszletSiman.push(`Beirt valasz: ${beirt || "Nincs"} (HIBAS)`);
+                            reszletSiman.push(`Elvart valasz: ${elvartStr}`);
+                        }
+                    } else {
+                        const jok = valaszok.filter(b => kObj.helyesValaszok.includes(b)).length;
+                        const rosszak = valaszok.filter(b => !kObj.helyesValaszok.includes(b)).length;
+                        const kell = kObj.helyesValaszok.length;
+
+                        siker = (jok === kell && rosszak === 0 && valaszok.length === kell);
+                        if (siker) szerzett += kObj.osszesPont;
+
+                        kObj.opciok.forEach((opcioSzoveg, oIdx) => {
+                            const betu = String.fromCharCode(65 + oIdx);
+                            const jelolve = valaszok.includes(betu);
+                            const helyes = kObj.helyesValaszok.includes(betu);
+
+                            if (jelolve && helyes) {
+                                reszletHtml += `<div class="opcio-reszlet opcio-jo-helyes"><span>[x] ${opcioSzoveg}</span><span>✅ Bejelölve (Helyes)</span></div>`;
+                                reszletSiman.push(`[X] ${opcioSzoveg} - HELYES`);
+                            } else if (jelolve && !helyes) {
+                                reszletHtml += `<div class="opcio-reszlet opcio-rossz-bejelolt"><span>[x] ${opcioSzoveg}</span><span>❌ Bejelölve (Hibás választás)</span></div>`;
+                                reszletSiman.push(`[X] ${opcioSzoveg} - HIBAS VALASZTAS`);
+                            } else if (!jelolve && helyes) {
+                                reszletHtml += `<div class="opcio-reszlet opcio-jo-kihagyott"><span>[ ] ${opcioSzoveg}</span><span>⚠️ Kihagyott helyes opció</span></div>`;
+                                reszletSiman.push(`[ ] ${opcioSzoveg} - KIHAGYOTT HELYES OPCIO`);
+                            } else {
+                                reszletHtml += `<div class="opcio-reszlet opcio-semleges"><span>[ ] ${opcioSzoveg}</span><span>-</span></div>`;
+                                reszletSiman.push(`[ ] ${opcioSzoveg}`);
+                            }
+                        });
+                    }
+
+                    statHtml += `<li class="statisztika-elem ${siker ? "helyes-kartya" : "hibas-kartya"}">
+                        <div class="statisztika-fejlec">
+                            <span>${idx + 1}. Kérdés: ${kObj.kerdes}</span>
+                            <span>${siker ? "✅ Helyes" : "❌ Hibás"} (${siker ? kObj.osszesPont : 0}/${kObj.osszesPont} pont)</span>
+                        </div>
+                        <div>${reszletHtml}</div>
+                    </li>`;
+
+                    lista.push({
+                        sorszam: idx + 1,
+                        kerdes: kObj.kerdes,
+                        allapot: siker ? "Helyes" : "Hibás",
+                        reszletek: reszletSiman,
+                        pont: siker ? kObj.osszesPont : 0,
+                        maxPont: kObj.osszesPont
+                    });
+                });
+
+                statHtml += `</ul></div>`;
+
+                const szazalek = osszes > 0 ? (szerzett / osszes) * 100 : 0;
+                const megfelelt = szazalek >= 75;
+
+                state.utolsoEredmeny = {
+                    trener,
+                    nev,
+                    kut,
+                    allomas,
+                    vezeto,
+                    szerzett,
+                    osszes,
+                    szazalek: szazalek.toFixed(1),
+                    allapot: megfelelt ? "MEGFELELT" : "NEM FELELT MEG",
+                    ido: idoMegjegyzes,
+                    lista
+                };
+
+                mutatUzenetet("", "");
+
+                const fejlecHtml = `<div class="tarolo ${megfelelt ? "siker" : "figyelmeztetes"}" style="margin-bottom: 14px;">
+                    🎉 Teszt vége (${nev} - Kút: ${kut} / ${allomas})!<br>
+                    Elért pontok: <strong>${szerzett} / ${osszes}</strong> (${szazalek.toFixed(1)}%)<br>
+                    Állapot: <span style="color: ${megfelelt ? "#065f46" : "#991b1b"}">${megfelelt ? "MEGFELELT (>= 75%)" : "NEM FELELT MEG (< 75%)"}</span><br>
+                    Idő felhasználása: <strong>${idoMegjegyzes}</strong>
+                </div>
+                <div class="tarolo" style="margin-bottom: 20px; text-align: center;">
+                    <div id="attekintesVisszaszamlaloDoboz" style="font-weight: 700; font-size: 16px; color: #991b1b; background: #fee2e2; border: 1px solid #f87171; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;">
+                        ⏱️ A válaszok megtekintésére hátralévő idő: <span id="attekintesTimer">10:00</span>
+                    </div>
+
+                    <button type="button" id="tesztVegeLezaroGomb" class="FoGomb" style="margin-top: 0;">🏁 Teszt vége</button>
+                </div>`;
+
+                const kontener = document.getElementById("kerdesekKontener");
+                kontener.innerHTML = fejlecHtml + statHtml;
+
+                document.getElementById("tesztVegeLezaroGomb").addEventListener("click", tesztVeglegesLezarasa);
+
+                kuldPdfGoogleDriveRa();
+                inditAttekintesIdozitot(10 * 60);
+
+            } catch (err) {
+                alert("Hiba történt a kiértékelés során: " + err.message);
+            }
+        }
+
+        function generalPdfAdatok() {
+            const e = state.utolsoEredmeny;
+            if (!e) throw new Error("Nincs elérhető teszteredmény.");
+
+            const elemek = [
+                { text: ekezetetTelenit("Pointb Trening Kozpont - Reszletes Teszt Eredmeny"), color: [0, 0.18, 0.38] },
+                { text: "--------------------------------------------------------------------", color: [0.5, 0.5, 0.5] },
+                { text: ekezetetTelenit(`A trener neve: ${e.trener}`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Vizsgazo valasztott neve: ${e.nev}`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Kutszam: ${e.kut}`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Toltoallomas neve: ${e.allomas}`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Teruleti vezeto: ${e.vezeto}`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Elert pontok: ${e.szerzett} / ${e.osszes} (${e.szazalek}%)`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Allapot: ${e.allapot}`), color: [0.2, 0.2, 0.2] },
+                { text: ekezetetTelenit(`Ido felhasznalasa: ${e.ido}`), color: [0.2, 0.2, 0.2] },
+                { text: "--------------------------------------------------------------------", color: [0.5, 0.5, 0.5] },
+                { text: ekezetetTelenit("Reszletes Kerdes es Valaszelemzes:"), color: [0, 0.18, 0.38] },
+                { text: "", color: [0, 0, 0] }
+            ];
+
+            e.lista.forEach(item => {
+                const fejlec = ekezetetTelenit(`${item.sorszam}. Kerdes: ${item.kerdes} [${item.allapot.toUpperCase()}]`);
+                const fejSorok = fejlec.match(/.{1,85}(\s|$)/g) || [fejlec];
+                fejSorok.forEach(s => {
+                    if (s && s.trim()) elemek.push({ text: s.trim(), color: [0, 0.25, 0.5] });
+                });
+
+                item.reszletek.forEach(rSor => {
+                    const tiszta = ekezetetTelenit(rSor);
+                    let col = [0.2, 0.2, 0.2];
+                    if (tiszta.includes("HELYES")) col = [0, 0.53, 0.31];
+                    else if (tiszta.includes("HIBAS") || tiszta.includes("KIHAGYOTT")) col = [0.8, 0.1, 0.1];
+
+                    const darabok = tiszta.match(/.{1,85}(\s|$)/g) || [tiszta];
+                    darabok.forEach(s => {
+                        if (s && s.trim()) elemek.push({ text: "   " + s.trim(), color: col });
+                    });
+                });
+                elemek.push({ text: "", color: [0, 0, 0] });
+            });
+
+            elemek.push({ text: "core code by prinyo", color: [0.4, 0.4, 0.4] });
+
+            const oldalak = [];
+            for (let i = 0; i < elemek.length; i += 45) {
+                oldalak.push(elemek.slice(i, i + 45));
+            }
+
+            const pdfEscape = s => s.split("\\").join("\\\\").split("(").join("\\(").split(")").join("\\)");
+
+            const objektek = [];
+            objektek[1] = "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+            objektek[3] = "3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n";
+
+            const pageIds = [];
+            let nextId = 4;
+
+            oldalak.forEach(oldal => {
+                const pId = nextId++;
+                const cId = nextId++;
+                pageIds.push(pId);
+
+                const stream = ["BT", "/F1 10 Tf", "40 790 Td", "14 TL"];
+                let prevColor = "";
+                oldal.forEach((el, idx) => {
+                    const cStr = `${el.color[0].toFixed(2)} ${el.color[1].toFixed(2)} ${el.color[2].toFixed(2)} rg`;
+                    if (cStr !== prevColor) {
+                        stream.push(cStr);
+                        prevColor = cStr;
+                    }
+                    stream.push(idx === 0 ? `(${pdfEscape(el.text)}) Tj` : `T* (${pdfEscape(el.text)}) Tj`);
+                });
+                stream.push("ET");
+                const streamData = stream.join("\n");
+
+                objektek[cId] = `${cId} 0 obj\n<< /Length ${streamData.length} >>\nstream\n${streamData}\nendstream\nendobj\n`;
+                objektek[pId] = `${pId} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ${cId} 0 R >>\nendobj\n`;
+            });
+
+            objektek[2] = `2 0 obj\n<< /Type /Pages /Kids [${pageIds.map(id => id + " 0 R").join(" ")}] /Count ${pageIds.length} >>\nendobj\n`;
+
+            let body = "%PDF-1.4\n";
+            const offsets = [0];
+            for (let id = 1; id < objektek.length; id++) {
+                offsets[id] = body.length;
+                body += objektek[id];
+            }
+
+            const xrefPos = body.length;
+            body += `xref\n0 ${objektek.length}\n0000000000 65535 f \n`;
+            for (let id = 1; id < objektek.length; id++) {
+                body += String(offsets[id]).padStart(10, "0") + " 00000 n \n";
+            }
+            body += `trailer\n<< /Size ${objektek.length} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+
+            const safeLatin1 = body.replace(/[^\x00-\xFF]/g, "?");
+            const base64 = btoa(safeLatin1);
+
+            const ma = new Date();
+            const datum = `${ma.getFullYear()}-${String(ma.getMonth() + 1).padStart(2, "0")}-${String(ma.getDate()).padStart(2, "0")}`;
+            const tisztaNev = (e.nev || "Vizsgazo").replace(/[^a-zA-Z0-9éáőúűóüöÍÉÁŐÚŰÓÚÜÖ\s]/g, "").replace(/\s+/g, "_");
+            const tisztaTrener = (e.trener || "Trener").replace(/[^a-zA-Z0-9éáőúűóüöÍÉÁŐÚŰÓÚÜÖ\s]/g, "").replace(/\s+/g, "_");
+            const fajlNev = `${tisztaNev}_${tisztaTrener}_${e.kut}_${datum}_${e.szazalek}%.pdf`;
+
+            return { fajlNev, base64, safeLatin1 };
+        }
+
+        function letoltHelyiPdf() {
+            const statusz = document.getElementById("pdfMuveletStatusz");
+            try {
+                const { fajlNev, safeLatin1 } = generalPdfAdatok();
+                const bytes = new Uint8Array(safeLatin1.length);
+                for (let i = 0; i < safeLatin1.length; i++) {
+                    bytes[i] = safeLatin1.charCodeAt(i);
+                }
+                const blob = new Blob([bytes], { type: "application/pdf" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fajlNev;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 15000);
+
+                if (statusz) {
+                    statusz.style.color = "#065f46";
+                    statusz.textContent = `✅ PDF legenerálva és letöltve: ${fajlNev}`;
+                }
+            } catch (err) {
+                if (statusz) {
+                    statusz.style.color = "#991b1b";
+                    statusz.textContent = "❌ PDF letöltési hiba: " + err.message;
+                }
+            }
+        }
+
+        function kuldPdfGoogleDriveRa() {
+            const statusz = document.getElementById("pdfMuveletStatusz");
+            const uzenetDiv = document.getElementById("uzenetContainer");
+            const gomb = document.getElementById("driveGomb");
+            try {
+                const { fajlNev, base64 } = generalPdfAdatok();
+
+                if (statusz) {
+                    statusz.style.color = "#0369a1";
+                    statusz.textContent = "⏳ Feltöltés a Google Drive-ra folyamatban...";
+                }
+                if (uzenetDiv) {
+                    uzenetDiv.textContent = "Feltöltés a Google Drive-ra folyamatban...";
+                    uzenetDiv.className = "info";
+                    uzenetDiv.style.display = "block";
+                }
+                if (gomb) {
+                    gomb.disabled = true;
+                    gomb.textContent = "⏳ Küldés folyamatban...";
+                }
+
+                fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        filename: fajlNev,
+                        base64: base64,
+                        trener: state.utolsoEredmeny ? state.utolsoEredmeny.trener : "",
+                        vizsgazo: state.utolsoEredmeny ? state.utolsoEredmeny.nev : "",
+                        kutszam: state.utolsoEredmeny ? state.utolsoEredmeny.kut : "",
+                        toltoallomas: state.utolsoEredmeny ? state.utolsoEredmeny.allomas : "",
+                        teruletiVezeto: state.utolsoEredmeny ? state.utolsoEredmeny.vezeto : "",
+                        pontszam: state.utolsoEredmeny ? `${state.utolsoEredmeny.szerzett}/${state.utolsoEredmeny.osszes}` : "",
+                        szazalek: state.utolsoEredmeny ? state.utolsoEredmeny.szazalek : "",
+                        allapot: state.utolsoEredmeny ? state.utolsoEredmeny.allapot : "",
+                        ido: state.utolsoEredmeny ? state.utolsoEredmeny.ido : "",
+                        portalUrl: ITP_PORTAL_URL
+                    })
+                })
+                .then(() => {
+                    if (statusz) {
+                        statusz.style.color = "#065f46";
+                        statusz.textContent = "✅ A részletes PDF sikeresen elküldve a Google Drive felhőbe!";
+                    }
+                    if (uzenetDiv) {
+                        uzenetDiv.textContent = "✅ A részletes PDF sikeresen elküldve a Google Drive felhőbe!";
+                        uzenetDiv.className = "siker";
+                        uzenetDiv.style.display = "block";
+                    }
+                    if (gomb) {
+                        gomb.disabled = false;
+                        gomb.textContent = "✅ Elküldve (újraküldés)";
+                    }
+                })
+                .catch(err => {
+                    if (statusz) {
+                        statusz.style.color = "#991b1b";
+                        statusz.textContent = "❌ Hiba a küldés során: " + err.message;
+                    }
+                    if (uzenetDiv) {
+                        uzenetDiv.textContent = "❌ Hiba a küldés során: " + err.message;
+                        uzenetDiv.className = "hiba";
+                        uzenetDiv.style.display = "block";
+                    }
+                    if (gomb) {
+                        gomb.disabled = false;
+                        gomb.textContent = "☁️ PDF küldése Drive-ra";
+                    }
+                });
+            } catch (err) {
+                alert("Hiba: " + err.message);
+                if (gomb) {
+                    gomb.disabled = false;
+                    gomb.textContent = "☁️ Feltöltés Google Drive-ra";
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const jsJelzo = document.getElementById("jsStatuszJelzo");
+            if (jsJelzo) {
+                jsJelzo.textContent = "🟢 Rendszer aktív • Mobil érintésvezérlés kész";
+                jsJelzo.style.color = "#065f46";
+            }
+
+            const kutInput = document.getElementById("kutSzam");
+            if (kutInput) {
+                kutInput.addEventListener("input", frissitAllomasEsVezeto);
+            }
+
+            document.querySelectorAll('input[name="kerdessorValaszto"]').forEach(r => {
+                r.addEventListener("change", valasztoValtas);
+            });
+
+            const fajlInput = document.getElementById("fajlBeolvaso");
+            const inditoGomb = document.getElementById("inditoGomb");
+
+            valasztoValtas();
+
+            if (fajlInput) {
+                fajlInput.addEventListener("change", event => {
+                    const valasztas = document.querySelector('input[name="kerdessorValaszto"]:checked').value;
+                    if (valasztas !== "sajat") return;
+                    const fajl = event.target.files[0];
+                    if (!fajl) return;
+
+                    mutatUzenetet("Fájl beolvasása folyamatban...", "info");
+                    inditoGomb.disabled = true;
+
+                    const olvaso = new FileReader();
+                    olvaso.onload = e => {
+                        try {
+                            const parsed = rugalmasTxtFeldolgozo(e.target.result);
+                            if (parsed.length === 0) {
+                                throw new Error("Nem sikerült egyetlen kérdést sem kinyerni. Ellenőrizd a fájl formátumát!");
+                            }
+                            state.kerdesLista = parsed;
+                            inditoGomb.disabled = false;
+                            mutatUzenetet(`✅ A(z) "${fajl.name}" fájl sikeresen betöltve (${parsed.length} db kérdés). Kattints a Teszt indítására!`, "siker");
+                        } catch (err) {
+                            mutatUzenetet("⚠️ Feldolgozási hiba: " + err.message, "hiba");
+                            inditoGomb.disabled = true;
+                        }
+                    };
+                    olvaso.readAsText(fajl, "UTF-8");
+                });
+            }
+
+            let utolsoInditas = 0;
+            const inditTesztet = e => {
+                const most = Date.now();
+                if (most - utolsoInditas < 400) return;
+                utolsoInditas = most;
+                if (e && e.cancelable) e.preventDefault();
+                lejatszoKattintasHang();
+
+                if (document.activeElement && typeof document.activeElement.blur === "function") {
+                    document.activeElement.blur();
+                }
+
+                frissitAllomasEsVezeto();
+
+                const trener = document.getElementById("trenerNev").value.trim();
+                const nev = document.getElementById("vizsgazoNev").value.trim();
+                const kut = document.getElementById("kutSzam").value.trim();
+                const vezeto = document.getElementById("teruletiVezeto").value.trim();
+
+                const hianyzo = [];
+                if (!trener) hianyzo.push("A tréner neve");
+                if (!nev) hianyzo.push("A vizsgázó neve");
+                if (!kut) hianyzo.push("A kútszám");
+
+                if (hianyzo.length > 0) {
+                    mutatUzenetet(`⚠️ HIÁNYZÓ ADATOK: ${hianyzo.join(", ")}! A teszt elindításához kérjük, töltsön ki minden mezőt.`, "hiba");
+                    return;
+                }
+                if (!/^\d{4}$/.test(kut)) {
+                    mutatUzenetet("⚠️ A kútszámnak pontosan 4 számjegyből kell állnia!", "hiba");
+                    return;
+                }
+                if (kut === "0000") {
+                    mutatUzenetet("⚠️ A kútszám nem lehet 0000, kérem változtassa meg!", "hiba");
+                    return;
+                }
+                if (!vezeto) {
+                    mutatUzenetet("⚠️ A megadott kútszámhoz nem található területi vezető! Kérem ellenőrizze a kútszámot.", "hiba");
+                    return;
+                }
+                if (state.kerdesLista.length === 0) {
+                    mutatUzenetet("⚠️ Nincsenek betöltött kérdések.", "hiba");
+                    return;
+                }
+
+                document.getElementById("beallitasokKontener").style.display = "none";
+                document.getElementById("inditoKontener").style.display = "none";
+
+                state.kezdesIdo = Date.now();
+                state.idotullepes = false;
+                state.aktualisKerdesIndex = 0;
+                state.rogzitettValaszok = [];
+                state.aktivKerdesLista = [...state.kerdesLista];
+
+                megjelenitKovetkezoKerdest();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                inditTesztIdozitot(15 * 60);
+            };
+
+            inditoGomb.addEventListener("touchend", inditTesztet, { passive: false });
+            inditoGomb.addEventListener("click", inditTesztet);
+        });
+
+        document.addEventListener("selectionchange", () => {
+            const active = document.activeElement;
+            if (!active || (active.tagName !== "INPUT" && active.tagName !== "TEXTAREA")) {
+                const sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && sel.toString().length > 0) {
+                    sel.removeAllRanges();
+                }
+            }
+        });
+    </script>
+
+    <!-- Printz Péter | core code by prinyo | https://pprinyo.github.io/itp-portal/ -->
+</body>
+</html>
